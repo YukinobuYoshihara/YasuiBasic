@@ -37,10 +37,11 @@ public class UserDao extends BaseDao{
 				user.setRole(rs.getString("role"));
 			}
 		}finally{
-
+			if(rs!=null)
+				rs.close();
+			if(pstmt!=null)
+				pstmt.close();
 		}
-		rs.close();
-		pstmt.close();
 		return user;
 	}
 	/**
@@ -71,8 +72,10 @@ public class UserDao extends BaseDao{
 				user.setRole(rs.getString("role"));
 			}
 		}finally{
-			rs.close();
-			pstmt.close();
+			if(rs!=null)
+				rs.close();
+			if(pstmt!=null)
+				pstmt.close();
 		}
 		return user;
 	}

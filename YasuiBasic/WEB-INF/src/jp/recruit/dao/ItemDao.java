@@ -5,18 +5,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
-import jp.recruit.bean.ItemBean;
-import jp.recruit.misc.StringValidator;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 
+import jp.recruit.bean.ItemBean;
+import jp.recruit.exception.ConsistencyErrorException;
+import jp.recruit.exception.ItemNotUniqueException;
+import jp.recruit.exception.ValidationErrorException;
+import jp.recruit.misc.StringValidator;
+
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.naming.NamingException;
 
 public class ItemDao extends BaseDao{
 	final int FAILURE = -1;
 
-	// 商品情報全件検索在庫付き
+	/**
+	 * 商品情報全件検索在庫付き
+	 * @return ArrayList<ItemBean>
+	 * @throws SQLException
+	 * @throws IOException
+	 */
 	public ArrayList<ItemBean> getAllItemsWithStock() throws SQLException,IOException{
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -47,9 +56,25 @@ public class ItemDao extends BaseDao{
 		return items;
 	}
 
-	// 商品情報１件挿入 戻り値は成功したら1、一意制約違反（既に同一キーが存在していたら）の場合は-1から-3。
+	// 
+	/**
+	 * 商品情報１件挿入 戻り値は成功したら1
+	 * @param cid
+	 * @param name
+	 * @param url
+	 * @param size
+	 * @param price
+	 * @param stock
+	 * @return
+	 * @throws SQLException
+	 * @throws UnsupportedEncodingException
+	 * @throws ItemNotUniqueException 
+	 * @throws ValidationErrorException 
+	 * @throws ConsistencyErrorException 
+	 */
 	public int insertItem(String cid, String name, String url, String size,
-			int price, int stock) throws SQLException,UnsupportedEncodingException{
+			int price, int stock) throws SQLException,UnsupportedEncodingException, ItemNotUniqueException, ValidationErrorException, ConsistencyErrorException{
+
 		int insertItemResult=0;
 		int insertStockResult=0;
 		PreparedStatement pstmt1=null;
@@ -57,9 +82,7 @@ public class ItemDao extends BaseDao{
 		PreparedStatement pstmt3=null;
 		PreparedStatement pstmt4=null;
 		ResultSet rs = null;
-		final int MISCERROR=-3;
-		final int NOTUNIQUEID=-1;
-		final int NOTUNIQUENAME=-2;
+
 		try{
 			//商品番号の重複チェック
 			String sql = "SELECT i.item_id FROM YASUI.item i where i.item_id = ?";
@@ -67,7 +90,7 @@ public class ItemDao extends BaseDao{
 			pstmt1.setString(1,cid);
 			rs = pstmt1.executeQuery();
 			if(rs.next()){
-				return NOTUNIQUEID;
+				throw new ItemNotUniqueException("商品ID",cid);
 			}
 			if(rs!=null)
 				rs.close();
@@ -77,7 +100,7 @@ public class ItemDao extends BaseDao{
 			pstmt2.setString(1,name);
 			rs = pstmt2.executeQuery();
 			if(rs.next()){
-				return NOTUNIQUENAME;
+				throw new ItemNotUniqueException("商品名",name);
 			}
 		}finally{
 			if(rs!=null)
@@ -89,7 +112,7 @@ public class ItemDao extends BaseDao{
 		}
 
 		if(stock < 0 ){
-			return MISCERROR;//負の在庫設定はできない
+			throw new ValidationErrorException("在庫数",stock);//負の在庫設定はできない
 		}else{
 			//商品テーブル更新
 			try{
@@ -108,6 +131,10 @@ public class ItemDao extends BaseDao{
 				pstmt4.setString(1,cid);
 				pstmt4.setInt(2,stock);
 				insertStockResult=pstmt4.executeUpdate();
+				if(insertItemResult==0||insertStockResult==0||insertItemResult!=insertStockResult){
+					con.rollback();
+					throw new ConsistencyErrorException("商品情報と在庫情報の登録の整合性が取れません");
+				}
 				con.commit();
 				pstmt3.close();
 				pstmt4.close();
@@ -121,31 +148,27 @@ public class ItemDao extends BaseDao{
 					pstmt4.close();
 			}
 		}
-		if(insertItemResult==insertStockResult)
-			return insertItemResult;
-		else
-			return MISCERROR;
+
+		return insertItemResult;
+
 	}
 
 	// 商品情報１件挿入 戻り値は成功したら1、一意制約違反（既に同一キーが存在していたら）の場合は-1から-2。その他の失敗は-3
-	public int insertItemBean(ItemBean ib) throws SQLException{
+	public int insertItemBean(ItemBean itemBean) throws SQLException, ItemNotUniqueException, ValidationErrorException, ConsistencyErrorException{
 		ResultSet rs = null;
-		int result=0;
-		final int NOTUNIQUEID=-1;
-		final int NOTUNIQUENAME=-2;
-		final int MISCERROR=-3;
+		int insertItemResult=0;
+		int insertStockResult=0;
 		PreparedStatement pstmt1=null;
 		PreparedStatement pstmt2=null;
 		PreparedStatement pstmt3=null;
 		PreparedStatement pstmt4=null;
-		if(ib==null){
-			System.err.println("itemDao#insertItemBean(ItemBean ib):引数がNull");
-			return MISCERROR;//その他の失敗でリターン
+		if(itemBean==null){
+			System.err.println("itemDao#insertItemBean(ItemBean itemBean):引数がNull");
+			throw new ValidationErrorException("商品情報が受け取ることができませんでした");//その他の失敗でリターン
 		}
-		String cid=ib.getItemNum();
-		String name=ib.getItemName();
+		String cid=itemBean.getItemNum();
+		String name=itemBean.getItemName();
 
-		System.out.println("(ItemDao.java)Beanから受け取ったname："+name);
 		if(!StringValidator.isUTF8(name)){
 			try{
 				System.out.println("(ItemDao.java)Beanから受け取ったnameが非UTF8判定："+name);
@@ -153,13 +176,13 @@ public class ItemDao extends BaseDao{
 				name = new String(byteName, "UTF-8");
 			}catch(UnsupportedEncodingException e){
 				System.err.println("(ItemDao)エンコードが不正です");
-				return MISCERROR;
+				throw new ValidationErrorException("商品情報の文字コードが不正です");
 			}
 		}
-		String url=ib.getImageUrl();
-		String size=ib.getItemSize();
-		int price=ib.getPrice();
-		int stock=ib.getStock();
+		String url=itemBean.getImageUrl();
+		String size=itemBean.getItemSize();
+		int price=itemBean.getPrice();
+		int stock=itemBean.getStock();
 		try{
 			//商品番号の重複チェック
 			System.out.println("(ItemDao)商品番号の重複チェック開始");
@@ -169,7 +192,7 @@ public class ItemDao extends BaseDao{
 			rs = pstmt1.executeQuery();
 			if(rs.next()){
 				System.err.println("(ItemDao)商品番号が重複しています");
-				return NOTUNIQUEID;
+				throw new ItemNotUniqueException("商品ID",cid);
 			}
 			if(rs!=null)
 				rs.close();
@@ -181,7 +204,7 @@ public class ItemDao extends BaseDao{
 			rs = pstmt2.executeQuery();
 			if(rs.next()){
 				System.err.println("(ItemDao)商品番名が重複しています");
-				return NOTUNIQUENAME;
+				throw new ItemNotUniqueException("商品ID",cid);
 			}
 		}finally{
 			if(pstmt1!=null)
@@ -196,140 +219,33 @@ public class ItemDao extends BaseDao{
 		System.out.println("(ItemDao)商品テーブル更新");
 		//トランザクション開始
 
-		try{
-			con.setAutoCommit(false);
-			String sql3 = "INSERT INTO item (item_id,item_name,imgurl,item_size,price,is_delete) VALUES(?,?,?,?,?,0)";
-			pstmt3 = con.prepareStatement(sql3);
-			pstmt3.setString(1,cid);
-			pstmt3.setString(2,name);
-			pstmt3.setString(3,url);
-			pstmt3.setString(4,size);
-			pstmt3.setInt(5,price);
-			result = pstmt3.executeUpdate();
-			System.out.println("(ItemDao)商品テーブルコミット");
-			//在庫テーブル更新
-			System.out.println("(ItemDao)在庫テーブル更新");
-			String sql4 = "insert into stock (item_id,stock_num,is_delete) VALUES(?,?,0)";
-			if(stock < 0 ){
-				System.err.println("(ItemDao)在庫が負の値に設定されています");
-				con.rollback();
-				return MISCERROR;
-			}else{
-				pstmt4 = con.prepareStatement(sql4);
-				pstmt4.setString(1,cid);
-				pstmt4.setInt(2,stock);
-				pstmt4.executeUpdate();
-				pstmt4.close();
-			}
-			System.out.println("(ItemDao)テーブルコミット");
-			con.commit();
-		}catch(SQLException e){
-			con.rollback();
-			throw new SQLException(e);
-		}finally{
-			try{
-				if(pstmt3!=null)
-					pstmt3.close();
-				if(pstmt4!=null)
-					pstmt4.close();
-			}catch(SQLException e){
-				throw new SQLException(e);
-			}
-		}
-		System.out.println("(ItemDao)返却予定のresult:"+result);
-		return result;
-	}
-
-	// 商品情報複数件挿入 戻り値は成功したら1、一意制約違反（既に同一キーが存在していたら）の場合は-1から-2。その他の失敗は-3
-	public int insertItemList(ArrayList<ItemBean> itemList) throws SQLException{
-		ResultSet rs = null;
-		int result=0;
-		final int NOTUNIQUEID=-1;
-		final int NOTUNIQUENAME=-2;
-		final int MISCERROR=-3;
-		PreparedStatement pstmt1=null;
-		PreparedStatement pstmt2=null;
-		PreparedStatement pstmt3=null;
-		PreparedStatement pstmt4=null;
-		for(ItemBean ib : itemList){
-			String cid=ib.getItemNum();
-			String name=ib.getItemName();
-
-			String url=ib.getImageUrl();
-			String size=ib.getItemSize();
-			int price=ib.getPrice();
-			int stock=ib.getStock();
-			try{
-				//商品番号の重複チェック
-				System.out.println("(ItemDao)商品番号の重複チェック開始");
-				String sql = "SELECT i.item_id FROM YASUI.item i where i.item_id = ?";
-				pstmt1 = con.prepareStatement(sql);
-				pstmt1.setString(1,cid);
-				rs = pstmt1.executeQuery();
-				if(rs.next()){
-					System.err.println("(ItemDao)商品番号が重複しています");
-					return NOTUNIQUEID;
-				}
-				if(rs!=null)
-					rs.close();
-				//商品名の重複チェック
-				System.out.println("(ItemDao)商品名の重複チェック開始");
-				String sql2 = "SELECT i.item_name FROM YASUI.item i where i.item_name = ?";
-				pstmt2 = con.prepareStatement(sql2);
-				pstmt2.setString(1,name);
-				rs = pstmt2.executeQuery();
-				if(rs.next()){
-					System.err.println("(ItemDao)商品番名が重複しています");
-					return NOTUNIQUENAME;
-				}
-				rs.close();
-			}catch(SQLException e){
-				con.rollback();
-				throw new SQLException(e);
-			}finally{
-				try{
-					if(pstmt1!=null)
-						pstmt1.close();
-					if(pstmt2!=null)
-						pstmt2.close();
-					if(rs!=null)
-						rs.close();
-				}catch(SQLException e){
-					throw new SQLException(e);
-				}
-			}
-
+		if(stock < 0 ){
+			throw new ValidationErrorException("在庫数",stock);//負の在庫設定はできない
+		}else{
 			//商品テーブル更新
-			System.out.println("(ItemDao)商品テーブル更新");
-			//トランザクション開始
-
 			try{
 				con.setAutoCommit(false);
-				String sql3 = "INSERT INTO item (item_id,item_name,imgurl,item_size,price,is_delete) VALUES(?,?,?,?,?,0)";
+				String sql3 = "INSERT INTO item VALUES(?,?,?,?,?)";
 				pstmt3 = con.prepareStatement(sql3);
 				pstmt3.setString(1,cid);
 				pstmt3.setString(2,name);
 				pstmt3.setString(3,url);
 				pstmt3.setString(4,size);
 				pstmt3.setInt(5,price);
-				result = pstmt3.executeUpdate();
-				System.out.println("(ItemDao)商品テーブルコミット");
+				insertItemResult = pstmt3.executeUpdate();
 				//在庫テーブル更新
-				System.out.println("(ItemDao)在庫テーブル更新");
-				String sql4 = "insert into stock (item_id,stock_num,is_delete) VALUES(?,?,0)";
-				if(stock < 0 ){
-					System.err.println("(ItemDao)在庫が負の値に設定されています");
+				String sql4 = "INSERT INTO stock VALUES(?,?)";
+				pstmt4 = con.prepareStatement(sql4);
+				pstmt4.setString(1,cid);
+				pstmt4.setInt(2,stock);
+				insertStockResult=pstmt4.executeUpdate();
+				if(insertItemResult==0||insertStockResult==0||insertItemResult!=insertStockResult){
 					con.rollback();
-					return MISCERROR;
-				}else{
-					pstmt4 = con.prepareStatement(sql4);
-					pstmt4.setString(1,cid);
-					pstmt4.setInt(2,stock);
-					pstmt4.executeUpdate();
-					pstmt4.close();
+					throw new ConsistencyErrorException("商品情報と在庫情報の登録の整合性が取れません");
 				}
-				System.out.println("(ItemDao)テーブルコミット");
 				con.commit();
+				pstmt3.close();
+				pstmt4.close();
 			}catch(SQLException e){
 				con.rollback();
 				throw new SQLException(e);
@@ -340,37 +256,45 @@ public class ItemDao extends BaseDao{
 					pstmt4.close();
 			}
 		}
-		System.out.println("(ItemDao)返却予定のresult:"+result);
-		return result;
+
+		return insertItemResult;
+
 	}
 
-	//注文情報を追加できるようにする場合は発注と同時に注文情報をテーブルにインサートする
-	// 注文情報１件挿入 戻り値は成功したら1、一意制約違反（既に同一キーが存在していたら）の場合は-1から-2。その他の失敗は-3
+	/**
+	 * 注文情報を追加できるようにする場合は発注と同時に注文情報をテーブルにインサートする
+	 * @param user_name
+	 * @param items
+	 * @return 成功したら1 失敗したら-1
+	 * @throws SQLException
+	 * @throws NamingException
+	 */
 	public int insertOrder(String user_name,ArrayList<ItemBean> items)
 			throws SQLException,NamingException{
 
 		int result=0;
 		int updateResult=0;
 		String uid=null;
+		
 		//注文IDに添付するuidを取得（5ケタ）
+		UserDao ud = new UserDao();
 		try{
-			UserDao ud = new UserDao();
 			ud.getConnection();
 			uid=ud.getUserByName(user_name).getId();
+		}finally{
 			ud.closeConnection();
-		}catch(SQLException e){
-			throw new SQLException(e.getMessage());
-		}catch(NamingException r){
-			throw new NamingException(r.getLocalizedMessage());
 		}
+		
 		//注文ID（oid）の作成
 		StringBuffer sb = new StringBuffer();
-		//日時情報を添付（17ケタ）
-		Date date = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-		sb.append(sdf.format(date));
+		//日時情報を添付（17ケタ） ※Java8必須
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+		sb.append(now.format(dateTimeFormatter));
+		
 		//UIDをoidに添付（5ケタ）
 		sb.append(uid);
+		
 		//競合対策で、3桁のランダムな数値をoidに添付する（3ケタ）
 		DecimalFormat df = new DecimalFormat("000");
 		sb.append( df.format( (int)( Math.random() * 1000 )));
@@ -427,8 +351,14 @@ public class ItemDao extends BaseDao{
 		return result;
 	}
 
-	//在庫のアップデート　成功すると1、失敗すると-1
+	/**
+	 * 在庫のアップデート　
+	 * @param order
+	 * @return 成功すると1、失敗すると-1
+	 * @throws SQLException
+	 */
 	public int updateStock(ArrayList<ItemBean> order)throws SQLException{
+		//行ロックをかけるSQL
 		String locksql = "select stock.stock_num from stock where item_id=? for update";
 		int result=0;
 		PreparedStatement pstmt=null;
@@ -439,6 +369,7 @@ public class ItemDao extends BaseDao{
 				ItemBean ib = order.get(i);
 				int newStock = ib.getStock()-ib.getOrder();
 				//排他制御対応可能なPreparedStatementオブジェクトの作成
+				//ここではサンプルとして使用しているが、
 				pstmt = con.prepareStatement(locksql,ResultSet.TYPE_FORWARD_ONLY,
 						ResultSet.CONCUR_UPDATABLE);
 				pstmt.setString(1,ib.getItemNum());
@@ -475,8 +406,8 @@ public class ItemDao extends BaseDao{
 	//* 	削除フラグを設定した場合の削除メソッド。削除フラグカラムの値を変えるだけ
 	// 商品情報削除　戻り値は削除した行数(削除フラグを立てる）
 	public int deleteItemByItemId(String id) throws SQLException{
-		String sql1 = "UPDATE YASUI.item SET item.is_delete = 1 where id = ?";
-		String sql2 = "UPDATE YASUI.stock SET item.is_delete = 1 where id = ?";
+		String sql1 = "UPDATE item SET item.is_delete = 1 where id = ?";
+		String sql2 = "UPDATE stock SET item.is_delete = 1 where id = ?";
 		PreparedStatement pstmt1=null;
 		PreparedStatement pstmt2=null;
 		int result=0;
@@ -508,8 +439,6 @@ public class ItemDao extends BaseDao{
 		}
 		return result;
 	}
-
-
 
 	// 商品情報完全削除:戻り値は削除した行数（テーブルからも削除）
 	public int removeItemByItemId(String id) throws SQLException{
@@ -546,8 +475,9 @@ public class ItemDao extends BaseDao{
 
 	// 商品情報削除:戻り値は削除した行数
 	public int removeItemList(ArrayList<ItemBean> targetItems) throws SQLException{
-		String sql1 = "UPDATE YASUI.item SET item.is_delete = 1 where item_id = ?";
-		String sql2 = "UPDATE YASUI.stock SET stock.is_delete = 1 where item_id = ?";
+		String sql1 = "UPDATE item SET item.is_delete = 1 where item_id = ?";
+		String sql2 = "UPDATE stock SET stock.is_delete = 1 where item_id = ?";
+		String sqlLock = "select item_id,item_name,imgurl,item_size,price,is_delete from item where item_id = ? for update";
 		PreparedStatement pstmt0=null;
 		PreparedStatement pstmt1=null;
 		PreparedStatement pstmt2=null;
@@ -555,7 +485,6 @@ public class ItemDao extends BaseDao{
 
 		try{
 			con.setAutoCommit(false);
-			String sqlLock = "select item_id,item_name,imgurl,item_size,price,is_delete from item where item_id = ? for update";
 			pstmt0 = con.prepareStatement(sqlLock);
 			pstmt1 = con.prepareStatement(sql1);
 			pstmt2 = con.prepareStatement(sql2);

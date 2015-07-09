@@ -4,6 +4,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import jp.recruit.bean.ItemBean;
+import jp.recruit.exception.ConsistencyErrorException;
+import jp.recruit.exception.ItemNotUniqueException;
+import jp.recruit.exception.ValidationErrorException;
 import jp.recruit.logic.AddItemLogic;
 
 import javax.naming.NamingException;
@@ -50,8 +53,8 @@ public class AddItemComplete extends HttpServlet {
 				if(result<=0){
 					error.addAll(logic.getErrors());
 				}
-			}catch(SQLException|NamingException e){
-				error.add("(AddItemComplete)商品の追加に失敗しました。(根本原因）："+e.getLocalizedMessage());
+			}catch(SQLException|NamingException | ItemNotUniqueException | ValidationErrorException | ConsistencyErrorException e){
+				error.add("(AddItemComplete)商品の追加に失敗しました。(根本原因）："+e.getMessage());
 			}
 			session.removeAttribute("newItem");
 		}
