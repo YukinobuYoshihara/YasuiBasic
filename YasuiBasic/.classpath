@@ -56,10 +56,12 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/YasuiBasic/WEB-INF/javadoc/commons-validator-1.4.0-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="WEB-INF/lib/jstl.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/orai18n.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/standard.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/taglibs-standard-compat-1.2.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/taglibs-standard-impl-1.2.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/taglibs-standard-jstlel-1.2.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/taglibs-standard-spec-1.2.1.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
