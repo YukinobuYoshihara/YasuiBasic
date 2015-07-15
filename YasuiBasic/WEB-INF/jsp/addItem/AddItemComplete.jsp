@@ -21,8 +21,6 @@
 					<span class="errormsg">(Error)：${message}</span>
 					<br />
 				</c:forEach>
-				<c:remove var="errormessage" />
-				<%--表示が終わったエラーメッセージはセッションから削除する --%>
 			</c:if>
 			<h2>商品の追加を完了しました</h2>
 			<div  id="goreturn">

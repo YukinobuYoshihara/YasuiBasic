@@ -15,17 +15,15 @@
 			</form>
 		</c:when>
 		<c:otherwise>
-			<c:if test="${not empty sessionScope.errormessage}">
+			<c:if test="${not empty errormessage}">
 				<c:forEach var="message" items="${errormessage}"
 					varStatus="statusError">
 					<span class="errormsg">(Error)：${message}</span>
 					<br />
 				</c:forEach>
-				<c:remove var="errormessage" />
-				<%--表示が終わったエラーメッセージはセッションから削除する --%>
 			</c:if>
 			<h2>変更したい在庫数量を指定してください</h2>
-			<form method="POST" action="/YasuiBasic/ChangeStockConfirm">
+			<form method="POST" action="ChangeStockConfirm">
 				<table class="itemlist">
 					<tr bgcolor="#00ccff">
 						<th>商品番号</th>

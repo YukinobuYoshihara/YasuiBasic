@@ -10,7 +10,7 @@
 	<c:choose>
 		<c:when test="${role != 'administrator'}">
 			<h2>管理者以外はこの画面にアクセスすることはできません。</h2>
-			<form method="POST" action="/YasuiBasic/Index">
+			<form method="POST" action="Index">
 				<input type="submit" name="return" value="ログイン画面に戻る" />
 			</form>
 		</c:when>
@@ -19,16 +19,14 @@
 				<c:when test="${canChange == false}">
 					<h2>在庫変更ができませんでした</h2>
 					<p>戻るボタンを押して、商品一覧から変更してください</p>
-					<c:if test="${not empty sessionScope.errormessage}">
+					<c:if test="${not empty errormessage}">
 						<c:forEach var="message" items="${errormessage}"
 							varStatus="statusError">
 							<span class="errormsg">(Error)：${message}</span>
 							<br />
 						</c:forEach>
-						<c:remove var="errormessage" />
-						<%--表示が終わったエラーメッセージはセッションから削除する --%>
 					</c:if>
-					<c:set var="destination" value="/YasuiBasic/ChangeStock" />
+					<c:set var="destination" value="ChangeStock" />
 					<form method="POST" action="${destination}">
 						<input type="submit" name="goindex" value="戻る" />
 					</form>
@@ -72,12 +70,12 @@
 	</c:choose>
 
 	<div id="goreturn">
-		<form method="GET" action="/YasuiBasic/ChangeStock">
-			<input type="submit" name="goindex" value="戻る" style="width: 100px;" />
+		<form method="GET" action="ChangeStock">
+			<input type="submit" name="goindex" value="戻る"  />
 		</form>
-		<form method="POST" action="/YasuiBasic/ChangeStockComplete">
+		<form method="POST" action="ChangeStockComplete">
 			<c:if test="${canChange == true}">
-				<input type="submit" name="change" value="変更する" style="width: 100px;" />
+				<input type="submit" name="change" value="変更する" />
 			</c:if>
 		</form>
 	</div>

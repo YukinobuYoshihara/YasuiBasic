@@ -26,7 +26,7 @@
 <body>
 	<c:import url="/WEB-INF/jsp/common/header.jsp" />
 	<h2>ログアウトしました</h2>
-	<form method="GET" action="/YasuiBasic/index">
+	<form method="GET" action="index">
 		<input type="submit" name="return" value="ログイン画面に戻る" />
 	</form>
 	<c:import url="/WEB-INF/jsp/common/footer.jsp" />

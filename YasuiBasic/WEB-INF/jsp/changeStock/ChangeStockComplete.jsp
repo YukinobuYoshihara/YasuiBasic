@@ -10,7 +10,7 @@
 	<c:choose>
 		<c:when test="${role != 'administrator'}">
 			<h2>管理者以外はこの画面にアクセスすることはできません。</h2>
-			<form method="POST" action="/YasuiBasic/Index">
+			<form method="POST" action="Index">
 				<input type="submit" name="return" value="ログイン画面に戻る" />
 			</form>
 		</c:when>
@@ -23,7 +23,7 @@
 					<br />
 				</c:forEach>
 			</c:if>
-			<form method="POST" action="/YasuiBasic/ListItem">
+			<form method="POST" action="ListItem">
 				<input type="submit" name="return" value="商品一覧に戻る" />
 			</form>
 		</c:otherwise>

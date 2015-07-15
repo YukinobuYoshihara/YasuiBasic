@@ -10,7 +10,7 @@
 	<c:choose>
 		<c:when test="${role != 'administrator'}">
 			<h2>管理者以外はこの画面にアクセスすることはできません。</h2>
-			<form method="POST" action="/YasuiBasic/Index">
+			<form method="POST" action="Index">
 				<input type="submit" name="return" value="ログイン画面に戻る" />
 			</form>
 		</c:when>
@@ -25,10 +25,8 @@
 							<span class="errormsg">(Error)：${message}</span>
 							<br />
 						</c:forEach>
-						<c:remove var="errormessage" />
-						<%--表示が終わったエラーメッセージはセッションから削除する --%>
 					</c:if>
-					<form method="POST" action="/YasuiBasic/RemoveItem">
+					<form method="POST" action="RemoveItem">
 						<input type="submit" name="goindex" value="戻る" />
 					</form>
 				</c:when>
@@ -61,11 +59,11 @@
 						</table>
 					</c:if>
 					<div id="goreturn">
-						<form method="POST" action="/YasuiBasic/RemoveItem">
+						<form method="POST" action="RemoveItem">
 							<input type="submit" name="goindex" value="戻る" />
 						</form>
 						<c:if test="${canRemove == true}">
-							<form method="POST" action="/YasuiBasic/RemoveItemComplete">
+							<form method="POST" action="RemoveItemComplete">
 								<input type="submit" name="remove" value="削除する" />
 							</form>
 						</c:if>

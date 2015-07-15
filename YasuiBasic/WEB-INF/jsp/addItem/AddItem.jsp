@@ -7,14 +7,12 @@
 <body>
 	<c:import url="/WEB-INF/jsp/common/header.jsp" />
 	<c:import url="/WEB-INF/jsp/common/navmenu.jsp" />
-	<c:if test="${not empty sessionScope.errormessage}">
+	<c:if test="${not empty errormessage}">
 		<c:forEach var="message" items="${errormessage}"
 			varStatus="statusError">
 			<span class="errormsg">(Error)：${message}</span>
 			<br />
 		</c:forEach>
-		<c:remove var="errormessage" />
-		<%--表示が終わったエラーメッセージはセッションから削除する --%>
 	</c:if>
 	<c:choose>
 		<c:when test="${role != 'administrator'}">

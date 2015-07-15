@@ -21,11 +21,9 @@
 					<span class="errormsg">(Error)：${message}</span>
 					<br />
 				</c:forEach>
-				<c:remove var="errormessage" />
-				<%--表示が終わったエラーメッセージはセッションから削除する --%>
 			</c:if>
 			<h2>商品の削除を完了しました</h2>
-			<form method="GET" action="/YasuiBasic/ListItem">
+			<form method="GET" action="ListItem">
 				<input type="submit" name="return" value="商品一覧に戻る" />
 			</form>
 		</c:otherwise>

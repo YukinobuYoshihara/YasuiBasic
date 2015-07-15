@@ -24,8 +24,6 @@
 							<span class="errormsg">(Error)：${message}</span>
 							<br />
 						</c:forEach>
-						<c:remove var="errormessage" />
-						<%--表示が終わったエラーメッセージはセッションから削除する --%>
 					</c:if>
 					<h2>追加する商品情報が正しくありません</h2>
 					<p>戻るボタンを押して、入力しなおしてください</p>
