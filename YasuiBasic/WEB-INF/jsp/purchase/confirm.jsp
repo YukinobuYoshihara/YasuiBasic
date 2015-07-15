@@ -37,7 +37,7 @@
 			<c:set var="sum" value='<%=0%>' />
 			<c:forEach var="orderitem" items="${items}" varStatus="status">
 				<tr>
-					<td><c:out value="${orderitem.itemNum}" /></td>
+					<td><c:out value="${orderitem.itemId}" /></td>
 					<td><c:out value="${orderitem.itemName}" /></td>
 					<td><a href=<c:out value="${orderitem.imageUrl}" />>商品画像</a></td>
 					<td><c:out value="${orderitem.itemSize}" /></td>
@@ -62,11 +62,11 @@
 		</table>
 	</c:if>
 	<div style="display:inline-flex">
-	<form method="GET" action="/YasuiBasic/ListItem">
+	<form method="GET" action="ListItem">
 		<input type="submit" name="goindex" value="戻る" style="width: 100px;" />
 	</form>
 	<c:if test="${canOrder == true}">
-		<form method="POST" action="/YasuiBasic/PurchaseComplete">
+		<form method="POST" action="PurchaseComplete">
 			<input type="submit" name="order" value="発注する" style="width: 100px;" />
 		</form>
 	</c:if>

@@ -31,7 +31,7 @@ public class ListItemLogic  extends AbstractLogic {
 			@Override
 			public int compare(ItemBean p1, ItemBean p2) {
 				//String同士のソートをするときはcompareTo()を使用する
-				return p1.getItemNum().compareTo(p2.getItemNum());
+				return p1.getItemId().compareTo(p2.getItemId());
 			}
 		});
 		return itemList;
@@ -47,14 +47,14 @@ public class ListItemLogic  extends AbstractLogic {
 			@Override
 			public int compare(ItemBean p1, ItemBean p2) {
 				//String同士のソートをするときはcompareTo()を使用する
-				return p1.getItemNum().compareTo(p2.getItemNum());
+				return p1.getItemId().compareTo(p2.getItemId());
 			}
 		});
 
 		//itemListとBackwardListをマージ
 		for(ItemBean item:itemList){
 			for(ItemBean backwardItem:backwardList){
-				if(item.getItemNum().equals(backwardItem.getItemNum())){
+				if(item.getItemId().equals(backwardItem.getItemId())){
 					item.setOrder(backwardItem.getOrder());
 				}
 			}

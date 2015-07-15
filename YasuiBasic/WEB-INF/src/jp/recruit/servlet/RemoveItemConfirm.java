@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+
 import jp.recruit.bean.ItemBean;
 import jp.recruit.logic.ListItemLogic;
 import jp.recruit.misc.CheckUtil;
@@ -24,22 +26,21 @@ public class RemoveItemConfirm extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		ServletContext sc=null;
-		String destination=null;
-		destination = "/WEB-INF/jsp/removeItem/RemoveItemConfirm.jsp";
+		String destination="/WEB-INF/jsp/removeItem/RemoveItemConfirm.jsp";
+		String message=null;
+
 		//エラーメッセージ処理クラスのインスタンス化
 		ArrayList<String> error = new ArrayList<String>();
 		//削除商品用ArrayListの作成
 		ArrayList<ItemBean> targetItems = new ArrayList<ItemBean>();
 		// セッションの取得
 		HttpSession session = request.getSession(false);
-		session.removeAttribute("errormessage");
 
-		// 変更可のデフォルト（true）セット
-		session.setAttribute("canRemove", Boolean.valueOf(true));
 		// 商品一覧の受け取り
 		ArrayList<ItemBean> items = (ArrayList<ItemBean>)session.getAttribute("items");
 		if(items==null){
-			error.add("セッションから旧商品情報が取得できませんでした");
+			message="セッションから旧商品情報が取得できませんでした";
+			error.add(message);
 		}
 		
 		try{
@@ -56,7 +57,7 @@ public class RemoveItemConfirm extends HttpServlet {
 			for(Map.Entry<String, String[]> mappedItem:itemMap.entrySet()){
 				System.out.println("Key="+mappedItem.getKey()+" :Value="+mappedItem.getValue()[0]);
 				for(ItemBean item:items){
-					if(item.getItemNum().equals(mappedItem.getKey())){
+					if(item.getItemId().equals(mappedItem.getKey())){
 						targetItems.add(item);
 						break;
 					}
@@ -74,39 +75,38 @@ public class RemoveItemConfirm extends HttpServlet {
 			// 注文が0行だったら注文可能フラグをfalse
 			if (targetItems.size() == 0){
 				System.out.println("有効な削除指定0");
-				error.add("(RemoveItemConfirm)有効な削除指定が確認できないため、削除できません。");
+				message="(RemoveItemConfirm)有効な削除指定が確認できないため、削除できません。";
+				error.add(message);
 			}
 		} catch (NamingException|SQLException e) {
-			error.add("(RemoveItemConfirm)"+e.getLocalizedMessage()+":商品情報の取得で不具合が発生しています");
+			message="(RemoveItemConfirm)"+e.getMessage()+":商品情報の取得で不具合が発生しています";
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
-			return;
+			error.add(message);
 		} catch (NumberFormatException e) {
-			error.add("(RemoveItemConfirm)"+e.getLocalizedMessage()+":注文情報の処理で不具合が発生しています");
+			message="(RemoveItemConfirm)"+e.getMessage()+":注文情報の処理で不具合が発生しています";
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
-			return;
+			error.add(message);
 		}
 
 		//エラーの有無で正常系と異常系を分ける
-		if(!error.isEmpty()){
+		if(!error.isEmpty()){//異常系
 			System.err.println("エラーを発見したよ:"+error.size());
 			//完成したエラーメッセージ用ArrayListをセッションに格納
-			session.setAttribute("errormessage",error);
+			request.setAttribute("errormessage",error);
 			destination = "/RemoveItem";
-			session.setAttribute("canRemove", Boolean.valueOf(false));
-		}else{
-			session.setAttribute("canRemove", Boolean.valueOf(true));
+			request.setAttribute("canRemove", Boolean.valueOf(false));
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , message);
+			return;
+		}else{//正常系
+			request.setAttribute("canRemove", Boolean.valueOf(true));
 			//確認済削除対象商品情報ArrayListをセッションに格納
 			session.setAttribute("targetItems", targetItems);
+			// ServletContextオブジェクトを取得
+			sc = this.getServletContext();
+			// RequestDispatcherオブジェクトを取得
+			RequestDispatcher rd = sc.getRequestDispatcher(destination);
+			// forwardメソッドで、処理をreceive.jspに転送
+			rd.forward(request, response);
 		}
-
-		// ServletContextオブジェクトを取得
-		sc = this.getServletContext();
-		// RequestDispatcherオブジェクトを取得
-		RequestDispatcher rd = sc.getRequestDispatcher(destination);
-		// forwardメソッドで、処理をreceive.jspに転送
-		rd.forward(request, response);
-		
 	}
 }

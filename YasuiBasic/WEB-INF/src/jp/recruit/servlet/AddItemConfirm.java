@@ -20,13 +20,13 @@ public class AddItemConfirm extends HttpServlet {
 	protected void doPost(HttpServletRequest request , HttpServletResponse response)
 			throws ServletException,IOException {
 		ServletContext sc=null;
-		String destination=null;
 		//デフォルトの転送先;
-		destination = "/WEB-INF/jsp/addItem/AddItemConfirm.jsp";
+		String destination = "/WEB-INF/jsp/addItem/AddItemConfirm.jsp";
 		//エラーメッセージ処理クラスのインスタンス化
 		ArrayList<String> error = new ArrayList<String>();
-		//セッションの取得（なければ作成）
+		//セッションの取得
 		HttpSession session = request.getSession(false);
+		
 		session.removeAttribute("errormessage");
 		//セッションに残ったフラグを消去
 		session.removeAttribute("canAdd");
@@ -120,7 +120,7 @@ public class AddItemConfirm extends HttpServlet {
 				ItemBean newItem = new ItemBean();
 				System.out.println("price="+price);
 				System.out.println("stock="+stock);
-				newItem.setItemNum(item_id);
+				newItem.setItemId(item_id);
 				newItem.setItemName(name);
 				newItem.setImageUrl(url);
 				newItem.setItemSize(size);

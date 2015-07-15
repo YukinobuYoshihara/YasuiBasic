@@ -1,6 +1,3 @@
-<%@page import="java.util.ArrayList"%>
-<%@page import="jp.recruit.bean.ItemBean"%>
-<%@page import="java.text.NumberFormat"%>
 <!doctype html>
 <html>
 <head>
@@ -49,7 +46,7 @@
 							</c:otherwise>
 						</c:choose>
 						<tr bgcolor="${bgcol}">
-							<td><c:out value="${item.itemNum}" /></td>
+							<td><c:out value="${item.itemId}" /></td>
 							<td><c:out value="${item.itemName}" /></td>
 							<td><a href=<c:out value="${item.imageUrl}" />>商品画像</a></td>
 							<td><c:out value="${item.itemSize}" /></td>
@@ -57,7 +54,7 @@
 									minFractionDigits="0" currencySymbol="\\" value="${item.price}" /></td>
 							<td><fmt:formatNumber type="number" groupingUsed="true"
 									minFractionDigits="0" value="${item.stock}" /></td>
-							<td><input type="number" name="${fn:escapeXml(item.itemNum)}" size="25" maxlength="8"
+							<td><input type="number" name="${fn:escapeXml(item.itemId)}" size="25" maxlength="8"
 								min="0" max="99999999" style="text-align: right" value="${fn:escapeXml(item.stock)}" /></td>
 						</tr>
 					</c:forEach>

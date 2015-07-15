@@ -12,7 +12,15 @@ public class LoginCheckLogic extends AbstractLogic {
 	public LoginCheckLogic() {
 
 	}
-	public boolean authCheck(String username,String password)throws SQLException,NamingException{
+	/**
+	 * DAOを呼び出してユーザーをユーザー名とパスワードで検索する
+	 * @param username
+	 * @param password
+	 * @return 発見できたらそのユーザーのUserBean、できなかったらnull
+	 * @throws SQLException
+	 * @throws NamingException
+	 */
+	public UserBean authCheck(String username,String password)throws SQLException,NamingException{
 		UserDao userDao = new UserDao();
 		UserBean userBean = null;
 		//ユーザー名とパスワードが空でなかったらログインチェック
@@ -23,7 +31,7 @@ public class LoginCheckLogic extends AbstractLogic {
 				userBean=userDao.getUserByName(username,password);
 				//ユーザー情報が取得でき、パスワードが一致したらログイン成功
 				if(userBean!=null&&userBean.getPasswd().equals(password)){
-					return true;
+					return userBean;
 				}
 			}finally{
 				//データベースと切断
@@ -31,6 +39,6 @@ public class LoginCheckLogic extends AbstractLogic {
 			}
 		}
 		//ここまで来たらログインは失敗
-		return false;
+		return null;
 	}
 }

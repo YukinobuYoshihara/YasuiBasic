@@ -54,7 +54,7 @@
 								</c:otherwise>
 							</c:choose>
 							<tr bgcolor="${bgcol}">
-								<td><c:out value="${item.itemNum}" /></td>
+								<td><c:out value="${item.itemId}" /></td>
 								<td><c:out value="${item.itemName}" /></td>
 								<td><a href=<c:out value="${item.imageUrl}" />>商品画像</a></td>
 								<td><c:out value="${item.itemSize}" /></td>

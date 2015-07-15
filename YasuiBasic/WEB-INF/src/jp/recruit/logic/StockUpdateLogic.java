@@ -7,6 +7,7 @@ import javax.naming.NamingException;
 
 import jp.recruit.bean.ItemBean;
 import jp.recruit.dao.ItemDao;
+import jp.recruit.exception.ProcessOrderException;
 
 public class StockUpdateLogic extends AbstractLogic {
 
@@ -15,20 +16,23 @@ public class StockUpdateLogic extends AbstractLogic {
 	}
 
 
-	public int updateStock(ArrayList<ItemBean> orderItems,String username)throws SQLException,NamingException{
+	public int updateStock(ArrayList<ItemBean> orderItems,String username)throws SQLException,NamingException, ProcessOrderException{
 		ItemDao dao = new ItemDao();
 		//処理の結果を受け取る変数
 		int result=0;
 		try{
 			dao.getConnection();
 			//注文により在庫更新処理の実行
-			result = dao.updateStock(orderItems);
-			if(result<0)
-				_errs.add("(StockUpdateLogic.java)在庫の更新失敗:エラーコード："+result);
-			else if(result ==0){
-				_errs.add("(StockUpdateLogic.java)更新失敗");
+			if(orderItems!=null){
+				result = dao.processOrder(username, orderItems);
+				if(result<0)
+					_errs.add("(StockUpdateLogic)在庫の更新失敗:エラーコード："+result);
+				else if(result ==0){
+					_errs.add("(StockUpdateLogic)更新できる在庫情報がありませんでした");
+				}
+			}else{
+				_errs.add("(StockUpdateLogic)更新失敗:注文情報がnullです");
 			}
-			dao.insertOrder(username, orderItems);
 		}finally{
 			dao.closeConnection();
 		}

@@ -15,10 +15,10 @@ import jp.recruit.misc.StringValidator;
  *
  */
 public class ItemBean implements java.io.Serializable{
-	public ItemBean(String itemNum, String itemName, String imageUrl,
+	public ItemBean(String itemId, String itemName, String imageUrl,
 			String itemSize, int price, int stock, int order) {
 		super();
-		this.itemNum = itemNum;
+		this.itemId = itemId;
 		this.itemName = itemName;
 		this.imageUrl = imageUrl;
 		this.itemSize = itemSize;
@@ -28,7 +28,7 @@ public class ItemBean implements java.io.Serializable{
 	}
 	public ItemBean() {
 		super();
-		this.itemNum = "(商品番号)";
+		this.itemId = "(商品番号)";
 		this.itemName = "(商品名)";
 		this.imageUrl = "(画像URL)";
 		this.itemSize = "（商品サイズ）";
@@ -37,14 +37,30 @@ public class ItemBean implements java.io.Serializable{
 		this.order = 0;
 		this.orderForDisplay = "0";
 	}
+	/**
+	 * @return itemId
+	 */
+	public String getItemId() {
+		return itemId;
+	}
+	/**
+	 * @param itemId セットする itemId
+	 */
+	public void setItemId(String itemId) {
+		if(itemId!=null&&!itemId.equals("")){
+			this.itemId = itemId;
+		}else{
+			System.err.println("(ItemBean)itemIdが空またはnullです。");
+		}
+	}
 	private static final long serialVersionUID = -5208260759536338784L;
 
-	private String itemNum;
+	private String itemId;
 	private String itemName;
 	private String imageUrl;
 	private String itemSize;
 	private int price;
-	private int stock;
+	private int stock; 
 	private int order;
 	private int is_delete;
 	private NumberFormat currency;
@@ -52,22 +68,7 @@ public class ItemBean implements java.io.Serializable{
 	private String priceCurrency;
 	private String stockForDisplay;
 	private String orderForDisplay;
-	/**
-	 * @return the itemNum
-	 */
-	public String getItemNum() {
-		return itemNum;
-	}
-	/**
-	 * @param itemNum the itemNum to set
-	 */
-	public void setItemNum(String itemNum) {
-		if(itemNum!=null&&!itemNum.equals("")){
-			this.itemNum = itemNum;
-		}else{
-			System.err.println("(ItemBean)itemNumが空またはnullです。");
-		}
-	}
+
 	/**
 	 * @return the itemName
 	 */

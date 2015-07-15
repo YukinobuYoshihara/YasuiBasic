@@ -37,12 +37,12 @@ public class AddItem extends HttpServlet {
       nextId = dao.getNextItemId();
       dao.closeConnection();
     } catch (NamingException|SQLException e) {
-		error.add("(PurchaseConfirm)"+e.getLocalizedMessage()+":新規商品IDの取得で不具合が発生しています");
+		error.add("(AddItem)"+e.getMessage()+":新規商品IDの取得で不具合が発生しています");
 		e.printStackTrace();
 		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
 		return;
 	}
-
+    //商品IDをRequestに格納
     request.setAttribute("nextId", nextId);
     //完成したエラーメッセージ用ArrayListをセッションに格納
     session.setAttribute("errormessage",error);
@@ -53,8 +53,5 @@ public class AddItem extends HttpServlet {
     //forwardメソッドで、処理をreceive.jspに転送
     rd.forward(request, response);
   }
-  protected void doPost(HttpServletRequest request , HttpServletResponse response)
-      throws ServletException,IOException {
-    this.doGet(request, response);
-  }
+
 }

@@ -48,7 +48,7 @@ public class Login extends HttpServlet {
 		String username="";
 		String password="";
 		//使用するオブジェクトの初期化
-		UserBean userBean= new UserBean();
+		UserBean userBean= null;
 
 		HashMap<String,ContentsBean> contentsMap = null;
 
@@ -64,9 +64,23 @@ public class Login extends HttpServlet {
 			try{
 				LoginCheckLogic loginCheck = new LoginCheckLogic();
 				//データベースに接続して、ユーザー情報を取得
+				userBean = loginCheck.authCheck(username, password);
 				//ユーザーが存在した
-				if(loginCheck.authCheck(username, password)){
+				if(userBean!=null){
 					isLogin=true;
+					//セッションを再作成する
+					session.invalidate();
+					session = req.getSession(true);
+					//ログイン属性詰め直し
+					session.setAttribute("username", userBean.getName());
+					session.setAttribute("descript", userBean.getDescript());
+					session.setAttribute("id", userBean.getId());
+					session.setAttribute("role", userBean.getRole());
+					if(userBean.getRole().equalsIgnoreCase("administrator")){
+						destination="/AddItem";
+					}else{
+						destination="/ListItem";
+					}
 				}else{
 					//ユーザー名かパスワードが間違っている場合の処理
 					error.add("ログイン処理に失敗しました。ユーザー名とパスワードが間違っている可能性があります");
@@ -77,6 +91,15 @@ public class Login extends HttpServlet {
 		}else{//ユーザー名とパスワードが空だった場合の処理
 			error.add("(LoginServlet)ログイン処理に失敗しました。ユーザー名とパスワードは省略できません。");
 		}
+		if(isLogin&&error.isEmpty()){
+			
+		}else{
+			//最終的になんらかの障害が発生している
+			error.add("(LoginServlet)ログインに失敗しました。");
+			session.setAttribute("errormessage",error);
+			destination="/WEB-INF/jsp/common/LoginError.jsp";
+		}
+		
 		try{
 			//データベースに接続して、TDK情報を管理する情報を取得
 			ListContentsLogic listContents = new ListContentsLogic();
@@ -85,37 +108,12 @@ public class Login extends HttpServlet {
 			error.add("(LoginServlet)コンテンツの取得処理に失敗しました"+e.getMessage());
 			destination="/index";
 		}
-		//ログインが成功した場合(isLoginがtrueかつ、errorが空だった
-		if(isLogin&&error.isEmpty()){
-			//セッションを再作成する
-			session.invalidate();
-			session = req.getSession(true);
-			//ログイン属性詰め直し
-			session.setAttribute("username", userBean.getName());
-			session.setAttribute("descript", userBean.getDescript());
-			session.setAttribute("id", userBean.getId());
-			session.setAttribute("role", userBean.getRole());
-			if(userBean.getRole().equalsIgnoreCase("administrator")){
-				destination="/AddItem";
-			}else{
-				destination="/ListItem";
-			}
-		}else{  //最終的になんらかの障害が発生している
-			error.add("(LoginServlet)ログインに失敗しました。");
-			session.setAttribute("errormessage",error);
-			isLogin=false;
-			destination="/WEB-INF/jsp/common/LoginError.jsp";
-		}
+
 		//コンテンツ情報をセッションに設定
 		session.setAttribute("contents", contentsMap);
-		//ログインフラグをセッションに格納
-		session.setAttribute("isLogin", isLogin);
-		// ServletContextオブジェクトを取得
-		sc = this.getServletContext();
-		// RequestDispatcherオブジェクトを取得
-		RequestDispatcher rd = sc.getRequestDispatcher(destination);
-		// forwardメソッドで、処理をreceive.jspに転送
-		rd.forward(req, res);
+
+		System.out.println("リダイレクト先："+req.getContextPath()+destination);
+		res.sendRedirect(req.getContextPath()+destination);
 		return;
 	}
 }

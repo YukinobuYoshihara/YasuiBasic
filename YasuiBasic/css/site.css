@@ -13,7 +13,7 @@ a:hover {
 }
 
 form.formular{
-	width: 950px;
+	width: 1200px;
 }
 .errormsg{
 	color: red;
@@ -71,6 +71,6 @@ border-right: none; /* ÅŒã‚Ìli—v‘f‚Ìê‡A‹æØ‚èü‚ğ•\¦‚µ‚È‚¢ */
 }
 
 input[type="submit"]{
-	width: 100px;
+	width: 140px;
 }
 

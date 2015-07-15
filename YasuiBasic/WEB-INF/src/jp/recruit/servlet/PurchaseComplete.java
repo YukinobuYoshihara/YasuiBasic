@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import jp.recruit.bean.ItemBean;
+import jp.recruit.exception.ProcessOrderException;
 import jp.recruit.logic.StockUpdateLogic;
 
 public class PurchaseComplete extends HttpServlet {
@@ -37,8 +38,8 @@ public class PurchaseComplete extends HttpServlet {
 		int result=0;
 		try{
 			result = logic.updateStock(orderitems, (String)session.getAttribute("username"));
-			System.err.println("(purchaseComplete)エラーコード："+result);
-		}catch(SQLException|NamingException e){
+			System.err.println("(purchaseComplete)戻り値："+result);
+		}catch(SQLException|NamingException | ProcessOrderException e){
 			error.add("(purchaseComplete)エラー："+e.getMessage()+"エラーコード："+result);
 			//ロジックのエラー吸い出し
 			error.add("エラーの詳細：");

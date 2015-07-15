@@ -19,7 +19,7 @@
 				<c:when test="${canRemove == false}">
 					<h2>削除対象がありません</h2>
 					<p>戻るボタンを押して、商品一覧から選択しなおしてください</p>
-					<c:if test="${not empty sessionScope.errormessage}">
+					<c:if test="${not empty errormessage}">
 						<c:forEach var="message" items="${errormessage}"
 							varStatus="statusError">
 							<span class="errormsg">(Error)：${message}</span>
@@ -47,7 +47,7 @@
 							<c:forEach var="targetItem" items="${targetItems}"
 								varStatus="status">
 								<tr>
-									<td><c:out value="${targetItem.itemNum}" /></td>
+									<td><c:out value="${targetItem.itemId}" /></td>
 									<td><c:out value="${targetItem.itemName}" /></td>
 									<td><a href=<c:out value="${targetItem.imageUrl}"/>>商品画像</a></td>
 									<td><c:out value="${targetItem.itemSize}" /></td>

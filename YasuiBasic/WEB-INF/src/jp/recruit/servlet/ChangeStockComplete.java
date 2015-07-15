@@ -22,40 +22,42 @@ public class ChangeStockComplete extends HttpServlet {
 	protected void doPost(HttpServletRequest request , HttpServletResponse response)
 			throws ServletException,IOException {
 		ServletContext sc=null;
-		String destination=null;
+		//エラーメッセージの一時保存用変数
+		String message=null;
 		//デフォルトの転送先
-		destination = "/WEB-INF/jsp/changeStock/ChangeStockComplete.jsp";
+		String destination = "/WEB-INF/jsp/changeStock/ChangeStockComplete.jsp";
 		//エラーメッセージ処理クラスのインスタンス化
 		ArrayList<String> error = new ArrayList<String>();
 		//セッションの取得（なければ作成）
 		HttpSession session = request.getSession(false);
-		session.removeAttribute("errormessage");
+		//在庫更新のロジック
 		ChangeStockLogic logic = new ChangeStockLogic();
 
-		ArrayList<ItemBean> stockitems = new ArrayList<ItemBean>();
 		int result=0;
-		stockitems = (ArrayList<ItemBean>)session.getAttribute("changeStock");
+		//セッションから
+		ArrayList<ItemBean> updatedItemList = (ArrayList<ItemBean>)session.getAttribute("changeStock");
 
 		try{
-			result=logic.updateStock(stockitems);
+			result=logic.updateStock(updatedItemList);
 			if(result < 0){
-				error.add("(ChangeStockComplete)在庫が更新できませんでした。updateの処理が正常に終了していません。");
+				message="(ChangeStockComplete)在庫が更新できませんでした。updateの処理が正常に終了していません。";
+				error.add(message);
 			}
 		}catch(SQLException | NamingException e){
-			error.add("(ChangeStockComplete)在庫の更新ができませんでした。DAOの呼び出しに失敗している可能性があります。");
+			message="(ChangeStockComplete)在庫の更新ができませんでした。DAOの呼び出しに失敗している可能性があります。";
+			error.add(message);
 		}
 		
 		session.removeAttribute("changeStock");
 		if(!error.isEmpty()){
 			destination="/ChangeStock";
 			session.setAttribute("update", Boolean.valueOf(false));
-		}else{
-			session.setAttribute("update", Boolean.valueOf(true));
+			//完成したエラーメッセージ用ArrayListをセッションに格納
+			request.setAttribute("errormessage",error);
 		}
 		session.removeAttribute("changeStock");
 		
-		//完成したエラーメッセージ用ArrayListをセッションに格納
-		session.setAttribute("errormessage",error);
+
 		//ServletContextオブジェクトを取得
 		sc = this.getServletContext();
 		//RequestDispatcherオブジェクトを取得

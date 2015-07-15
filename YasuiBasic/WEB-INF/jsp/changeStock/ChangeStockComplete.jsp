@@ -1,6 +1,3 @@
-<%@page import="java.util.ArrayList"%>
-<%@page import="jp.recruit.bean.ItemBean"%>
-<%@page import="java.text.NumberFormat"%>
 <!doctype html>
 <html>
 <head>
@@ -19,14 +16,12 @@
 		</c:when>
 		<c:otherwise>
 			<h2>在庫数の変更を完了しました</h2>
-			<c:if test="${not empty sessionScope.errormessage}">
+			<c:if test="${not empty errormessage}">
 				<c:forEach var="message" items="${errormessage}"
 					varStatus="statusError">
 					<span class="errormsg">(Error)：${message}</span>
 					<br />
 				</c:forEach>
-				<c:remove var="errormessage" />
-				<%--表示が終わったエラーメッセージはセッションから削除する --%>
 			</c:if>
 			<form method="POST" action="/YasuiBasic/ListItem">
 				<input type="submit" name="return" value="商品一覧に戻る" />

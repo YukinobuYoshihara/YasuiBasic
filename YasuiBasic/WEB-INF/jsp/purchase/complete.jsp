@@ -8,7 +8,7 @@
 	<c:import url="/WEB-INF/jsp/common/header.jsp" />
 	<c:import url="/WEB-INF/jsp/common/navmenu.jsp" />
 	<c:choose>
-	<c:when test="${not empty sessionScope.errormessage}">
+	<c:when test="${not empty errormessage}">
 		<c:forEach var="message" items="${errormessage}"
 			varStatus="statusError">
 			<span class="errormsg">(Error)：${message}</span>
@@ -22,7 +22,7 @@
 	<h2>注文を完了しました</h2>
 	</c:otherwise>
 	</c:choose>
-	<form method="POST" action="/YasuiBasic/ListItem">
+	<form method="POST" action="ListItem">
 		<input type="submit" name="return" value="商品一覧に戻る" />
 	</form>
 	<c:remove var="items" />

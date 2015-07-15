@@ -7,17 +7,15 @@
 <body>
 	<c:import url="/WEB-INF/jsp/common/header.jsp" />
 	<c:import url="/WEB-INF/jsp/common/navmenu.jsp" />
-	<c:if test="${not empty sessionScope.errormessage}">
+	<c:if test="${not empty errormessage}">
 		<c:forEach var="message" items="${errormessage}"
 			varStatus="statusError">
 			<span class="errormsg">(エラー)：${message}</span>
 			<br />
 		</c:forEach>
-		<c:remove var="errormessage" /><c:remove var="canOrder"/>
-		<%--表示が終わったエラーメッセージはセッションから削除する --%>
 	</c:if>
 	<h2>商品一覧</h2>
-	<form method="POST" action="/YasuiBasic/PurchaseConfirm">
+	<form method="POST" action="PurchaseConfirm">
 		<table class="itemlist">
 			<tr>
 				<th>商品番号</th>
@@ -30,7 +28,7 @@
 			</tr>
 			<c:forEach var="item" items="${items}" varStatus="status">
 				<tr>
-					<td><c:out value="${item.itemNum}" /></td>
+					<td><c:out value="${item.itemId}" /></td>
 					<td><c:out value="${item.itemName}" /></td>
 					<td><a href=<c:out value="${item.imageUrl}"/>>商品画像</a></td>
 					<td><c:out value="${item.itemSize}" /></td>
@@ -46,7 +44,7 @@
 						</c:when>
 						<c:otherwise>
 							<td><c:out value="${item.stock}" /></td>
-							<td><input type="number" name="${fn:escapeXml(item.itemNum)}" size="25" maxlength="8"
+							<td><input type="number" name="${fn:escapeXml(item.itemId)}" size="25" maxlength="8"
 								min="0" max="${item.stock}" style="text-align: right" value="${fn:escapeXml(item.order)}" /></td>
 						</c:otherwise>
 					</c:choose>

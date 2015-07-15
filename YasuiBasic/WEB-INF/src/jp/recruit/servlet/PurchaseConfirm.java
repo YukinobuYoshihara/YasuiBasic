@@ -19,7 +19,7 @@ import jp.recruit.misc.CheckUtil;
 public class PurchaseConfirm extends YasuiServlet {
 	private static final long serialVersionUID = 7612802445832537582L;
 
-	protected void doPost(HttpServletRequest req, HttpServletResponse res)
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		ServletContext sc=null;
 		String destination=null;
@@ -27,17 +27,16 @@ public class PurchaseConfirm extends YasuiServlet {
 		destination = "/WEB-INF/jsp/purchase/confirm.jsp";
 
 		// セッションの取得（なければ作成）
-		HttpSession session = req.getSession(false);
+		HttpSession session = request.getSession(false);
 
 		// 注文用ArrayListの作成
 		ArrayList<ItemBean> orderedItems = new ArrayList<ItemBean>();
-		// 作業用ArrayList
+		// 作業用ArrayListの準備
 		ArrayList<ItemBean> items=null;
 		orderedItems.clear();
+		
 		//エラーメッセージ処理List
 		ArrayList<String> error = new ArrayList<String>();
-		session.removeAttribute("errormessage");
-		session.removeAttribute("items");
 
 		try {
 			//最新の商品一覧（在庫付き）を取得
@@ -45,7 +44,7 @@ public class PurchaseConfirm extends YasuiServlet {
 			items = listItemLogic.getItemList();
 
 			//リクエストよりパラメーターのMapを取得
-			Map<String,String[]> itemMap = req.getParameterMap();
+			Map<String,String[]> itemMap = request.getParameterMap();
 			//チェック用ユーティリティクラスのインスタンス化
 			CheckUtil cu = new CheckUtil();
 
@@ -53,7 +52,7 @@ public class PurchaseConfirm extends YasuiServlet {
 			for(Map.Entry<String, String[]> item:itemMap.entrySet()){
 				System.out.println("Key="+item.getKey()+" :Value="+item.getValue()[0]);
 				for(ItemBean orderItem:items){
-					if(orderItem.getItemNum().equals(item.getKey())){
+					if(orderItem.getItemId().equals(item.getKey())){
 						//エラーチェックして整数変換不可の場合はエラーメッセージを構築する
 						if(cu.numberTypeCheck(item.getValue()[0], item.getKey()+"の注文数")){
 							orderItem.setOrder(Integer.parseInt(item.getValue()[0]));
@@ -61,6 +60,10 @@ public class PurchaseConfirm extends YasuiServlet {
 						break;
 					}
 				}
+			}
+			System.err.println("itemsのリストマージ確認（itemsにちゃんと注文数が入っている）");
+			for(ItemBean orderItem:items){
+				System.err.println("商品名"+orderItem.getItemName()+"の注文数："+orderItem.getOrder());
 			}
 			System.err.println("作業用ArrayList確認--------");
 			for(ItemBean temp:items){
@@ -78,7 +81,7 @@ public class PurchaseConfirm extends YasuiServlet {
 				}else if(orderItem.getOrder()==0){//注文数0はスキップする
 					continue;
 				}else if(orderItem.getStock()<orderItem.getOrder()){ //注文が在庫より大きかったらはじく
-					error.add("(PurchaseConfirm)"+orderItem.getItemName()+"の注文数が在庫を超えているため、発注できません。");
+					error.add("(PurchaseConfirm)"+orderItem.getItemName()+"の注文数が在庫"+orderItem.getStock()+"を超えているため、発注できません。");
 					System.err.println("在庫不足");
 					continue;
 				}else{
@@ -94,26 +97,26 @@ public class PurchaseConfirm extends YasuiServlet {
 				error.add("(PurchaseConfirm)有効な注文が確認できないため、発注できません。");
 			}
 		} catch (NamingException|SQLException e) {
-			error.add("(PurchaseConfirm)"+e.getLocalizedMessage()+":商品情報の取得で不具合が発生しています");
+			error.add("(PurchaseConfirm)"+e.getMessage()+":商品情報の取得で不具合が発生しています");
 			e.printStackTrace();
-			res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
 			return;
 		} catch (NumberFormatException e) {
-			error.add("(PurchaseConfirm)"+e.getLocalizedMessage()+":注文情報の処理で不具合が発生しています");
+			error.add("(PurchaseConfirm)"+e.getMessage()+":注文情報の処理で不具合が発生しています");
 			e.printStackTrace();
-			res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
 			return;
 		}
 		//何らかのエラーがあったらエラーメッセージを指定して差し戻し
 		if(!error.isEmpty()){
 			System.err.println("エラーメッセージあったよ");
-			session.setAttribute("errormessage",error);
+			request.setAttribute("errormessage",error);
 			destination = "/WEB-INF/jsp/purchase/list.jsp";
-			session.setAttribute("canOrder", Boolean.valueOf(false));
+			request.setAttribute("canOrder", Boolean.valueOf(false));
 			//もとのページに戻すので、単なる商品一覧のほうを戻す
 			session.setAttribute("items", items);
 		}else{
-			session.setAttribute("canOrder", Boolean.valueOf(true));
+			request.setAttribute("canOrder", Boolean.valueOf(true));
 			//完成した注文用ArrayListをセッションに格納（上書き）
 			session.setAttribute("items", orderedItems);
 		}
@@ -124,7 +127,7 @@ public class PurchaseConfirm extends YasuiServlet {
 		// RequestDispatcherオブジェクトを取得
 		RequestDispatcher rd = sc.getRequestDispatcher(destination);
 		// forwardメソッドで、処理を転送
-		rd.forward(req, res);
+		rd.forward(request, response);
 		return;
 	}
 

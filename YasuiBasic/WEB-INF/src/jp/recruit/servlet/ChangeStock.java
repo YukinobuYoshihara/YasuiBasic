@@ -28,12 +28,7 @@ public class ChangeStock extends HttpServlet {
     HttpSession session = request.getSession(false);
     session.removeAttribute("items");
     session.removeAttribute("changeStock");
-	//エラーリストを取得
-	ArrayList<String> temp = new ArrayList<>();
-	temp=(ArrayList<String>)session.getAttribute("errormessage");
-	if(temp!=null&&!temp.isEmpty()){
-		error.addAll(temp);
-	}
+
 	//商品一覧のArrayList作成
 	ArrayList<ItemBean> itemList = new ArrayList<ItemBean>();
 	//ロジッククラスのインスタンス作成
@@ -57,7 +52,7 @@ public class ChangeStock extends HttpServlet {
 	}
 
     //完成したエラーメッセージ用ArrayListをセッションに格納
-    session.setAttribute("errormessage",error);
+    request.setAttribute("errormessage",error);
     //変更対象の商品のArrayListをセッションに格納
     session.setAttribute("changeStock", itemList);
     //ServletContextオブジェクトを取得

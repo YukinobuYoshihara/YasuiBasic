@@ -21,7 +21,7 @@ public class RemoveItemLogic extends AbstractLogic {
 		try{
 			dao.getConnection();
 			result = dao.removeItemList(targetItems);
-			if(result<=0){
+			if(result<0){
 				switch(result){
 				case 0:
 					rootcause="update文が失敗しました";

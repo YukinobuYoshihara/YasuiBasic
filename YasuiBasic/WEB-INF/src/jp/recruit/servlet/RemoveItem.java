@@ -17,7 +17,7 @@ import jp.recruit.logic.ListItemLogic;
 
 public class RemoveItem extends HttpServlet {
 	private static final long serialVersionUID = -4751992084637285363L;
-	@SuppressWarnings("unchecked")
+
 	protected void doGet(HttpServletRequest request , HttpServletResponse response)
 			throws ServletException,IOException {
 		ServletContext sc=null;
@@ -29,12 +29,7 @@ public class RemoveItem extends HttpServlet {
 		HttpSession session = request.getSession(false);
 		session.removeAttribute("canRemove");
 		session.removeAttribute("items");
-		//エラーリストを取得してマージ
-		ArrayList<String> temp = new ArrayList<>();
-		temp=(ArrayList<String>)session.getAttribute("errormessage");
-		if(temp!=null&&!temp.isEmpty()){
-			error.addAll(temp);
-		}
+		
 		//商品一覧のArrayList作成
 		ArrayList<ItemBean> itemList = new ArrayList<ItemBean>();
 		//ロジッククラスのインスタンス作成
@@ -48,9 +43,9 @@ public class RemoveItem extends HttpServlet {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
 			return;
 		}
-		//完成したエラーメッセージ用ArrayListをセッションに格納
-		session.setAttribute("errormessage",error);
-		//変更対象の商品のArrayListをセッションに格納
+		//完成したエラーメッセージ用ArrayListをRequestに格納
+		request.setAttribute("errormessage",error);
+		//変更対象の商品のArrayListをsessionに格納
 		session.setAttribute("items", itemList);
 		//ServletContextオブジェクトを取得
 		sc = this.getServletContext();

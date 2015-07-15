@@ -10,12 +10,12 @@
 	<c:choose>
 		<c:when test="${role != 'administrator'}">
 			<h2>管理者以外はこの画面にアクセスすることはできません。</h2>
-			<form method="POST" action="/YasuiBasic/Index">
+			<form method="POST" action="Index">
 				<input type="submit" name="return" value="ログイン画面に戻る" />
 			</form>
 		</c:when>
 		<c:otherwise>
-			<c:if test="${not empty sessionScope.errormessage}">
+			<c:if test="${not empty errormessage}">
 				<c:forEach var="message" items="${errormessage}"
 					varStatus="statusError">
 					<span class="errormsg">(Error)：${message}</span>
@@ -26,10 +26,10 @@
 			</c:if>
 			<h2>商品の追加を完了しました</h2>
 			<div  id="goreturn">
-			<form method="POST" action="/YasuiBasic/AddItem">
+			<form method="POST" action="AddItem">
 				<input type="submit" name="return" value="商品追加画面に戻る" />
 			</form>
-			<form method="POST" action="/YasuiBasic/ListItem">
+			<form method="POST" action="ListItem">
 				<input type="submit" name="return" value="商品一覧に戻る" />
 			</form>
 			</div>

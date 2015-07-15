@@ -54,6 +54,7 @@ public class AddItemComplete extends HttpServlet {
 					error.addAll(logic.getErrors());
 				}
 			}catch(SQLException|NamingException | ItemNotUniqueException | ValidationErrorException | ConsistencyErrorException e){
+				e.printStackTrace();
 				error.add("(AddItemComplete)商品の追加に失敗しました。(根本原因）："+e.getMessage());
 			}
 			session.removeAttribute("newItem");

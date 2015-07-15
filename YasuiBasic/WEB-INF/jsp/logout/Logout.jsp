@@ -2,22 +2,21 @@
 <!doctype html>
 <html>
 <head>
+<c:remove var="isLogin"/>
+<c:remove var="newItem"/>
+<c:remove var="items"/>
+<c:remove var="orderitems"/>
+<c:remove var="stockitems"/>
+<c:remove var="canAdd"/>
+<c:remove var="canOrder"/>
+<c:remove var="canChange"/>
+<c:remove var="errormessage"/>
+<c:remove var="role"/>
+<c:remove var="username"/>
+<c:remove var="descript"/>
+<c:remove var="id"/>
+<c:remove var="exception"/>
 <%
-	//セッションの中身を取得できたらすべて削除
-	session.removeAttribute("isLogin");
-	session.removeAttribute("newItem");
-	session.removeAttribute("items");
-	session.removeAttribute("orderitems");
-	session.removeAttribute("stockitems");
-	session.removeAttribute("canAdd");
-	session.removeAttribute("canOrder");
-	session.removeAttribute("canChange");
-	session.removeAttribute("errormessage");
-	session.removeAttribute("role");
-	session.removeAttribute("username");
-	session.removeAttribute("descript");
-	session.removeAttribute("id");
-	session.removeAttribute("exception");
 	//セッション廃棄
 	session.invalidate();
 %>

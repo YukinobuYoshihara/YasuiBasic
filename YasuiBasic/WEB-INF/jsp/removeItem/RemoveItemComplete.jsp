@@ -15,7 +15,7 @@
 			</form>
 		</c:when>
 		<c:otherwise>
-			<c:if test="${not empty sessionScope.errormessage}">
+			<c:if test="${not empty errormessage}">
 				<c:forEach var="message" items="${errormessage}"
 					varStatus="statusError">
 					<span class="errormsg">(Error)：${message}</span>

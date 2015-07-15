@@ -10,7 +10,7 @@
 	<c:choose>
 		<c:when test="${role != 'administrator'}">
 			<h2>管理者以外はこの画面にアクセスすることはできません。</h2>
-			<form method="POST" action="/YasuiBasic/Index">
+			<form method="POST" action="Index">
 				<input type="submit" name="return" value="ログイン画面に戻る" />
 			</form>
 		</c:when>
@@ -26,7 +26,7 @@
 			</c:if>
 			<h2>商品一覧</h2>
 			<p>削除したい商品のチェックボックスをチェックしてください</p>
-			<form method="POST" action="/YasuiBasic/RemoveItemConfirm">
+			<form method="POST" action="RemoveItemConfirm">
 				<table class="itemlist">
 					<tr>
 						<th>削除対象</th>
@@ -39,9 +39,9 @@
 					</tr>
 					<c:forEach var="item" items="${items}" varStatus="status">
 						<tr>
-							<td><input type="checkbox" name="${item.itemNum}"
+							<td><input type="checkbox" name="${item.itemId}"
 								value="on"></td>
-							<td><c:out value="${item.itemNum}" /></td>
+							<td><c:out value="${item.itemId}" /></td>
 							<td><c:out value="${item.itemName}" /></td>
 							<td><a href=<c:out value="${item.imageUrl}" />>商品画像</a></td>
 							<td><c:out value="${item.itemSize}" /></td>

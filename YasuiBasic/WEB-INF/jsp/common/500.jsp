@@ -1,33 +1,5 @@
 <%@ page isErrorPage="true"%>
 <%@ page contentType="text/html; charset=UTF-8" session="false"%>
-<%
-  // Java 例外オブジェクト
-  Throwable exceptionObject =
-    (Throwable)request.getAttribute("javax.servlet.error.exception");
-
-  // エラーの発生したrequest URI
-  String requestURI =
-    (String)request.getAttribute("javax.servlet.error.request_uri");
-
-  // Java例外タイプ
-  Class exceptionType =
-    (Class)request.getAttribute("javax.servlet.error.exception_type");
-
-  // HTTP status メッセージ
-  String message =
-    (String)request.getAttribute(
-        "javax.servlet.error.message");
-
-  // servlet 名
-  String servletName =
-    (String)request.getAttribute(
-        "javax.servlet.error.servlet_name");
-
-  // statusコード
-  Integer statusCode =
-    (Integer)request.getAttribute(
-        "javax.servlet.error.status_code");
-%>
 <!DOCTYPE html>
 <html>
 <head>

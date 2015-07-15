@@ -11,14 +11,14 @@
 	<c:choose>
 		<c:when test="${role != 'administrator'}"><%--フィルターと二段構え --%>
 			<h2>管理者以外はこの画面にアクセスすることはできません。</h2>
-			<form method="POST" action="/YasuiBasic/Index">
+			<form method="POST" action="Index">
 				<input type="submit" name="return" value="ログイン画面に戻る" />
 			</form>
 		</c:when>
 		<c:otherwise>
 			<c:choose>
 				<c:when test="${canAdd == false}">
-					<c:if test="${not empty sessionScope.errormessage}">
+					<c:if test="${not empty errormessage}">
 						<c:forEach var="message" items="${errormessage}"
 							varStatus="statusError">
 							<span class="errormsg">(Error)：${message}</span>
@@ -52,7 +52,7 @@
 							</tr>
 							<c:set var="bgcol" value="#FFffCC" />
 							<tr bgcolor="${bgcol}">
-								<td><c:out value="${newItem.itemNum}" /></td>
+								<td><c:out value="${newItem.itemId}" /></td>
 								<td><c:out value="${newItem.itemName}" /></td>
 								<td><a href=<c:out value="${newItem.imageUrl}" />>商品画像</a></td>
 								<td><c:out value="${newItem.itemSize}" /></td>
@@ -65,10 +65,10 @@
 						</table>
 					</c:if>
 					<div id="goreturn">
-					<form method="GET" action="/YasuiBasic/AddItem">
+					<form method="GET" action="AddItem">
 						<input type="submit" name="goindex" value="戻る" />
 					</form>
-					<form method="POST" action="/YasuiBasic/AddItemComplete">
+					<form method="POST" action="AddItemComplete">
 						<c:if test="${canAdd == true}">
 							<input type="submit" name="addItem" value="追加する" />
 						</c:if>

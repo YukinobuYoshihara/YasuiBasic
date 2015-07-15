@@ -22,14 +22,12 @@ public class RemoveItemComplete extends HttpServlet {
 	protected void doPost(HttpServletRequest request , HttpServletResponse response)
 			throws ServletException,IOException {
 		ServletContext sc=null;
-		String destination=null;
-		destination = "/WEB-INF/jsp/removeItem/RemoveItemComplete.jsp";
+		String destination= "/WEB-INF/jsp/removeItem/RemoveItemComplete.jsp";
 		//エラーメッセージ処理クラスのインスタンス化
 		ArrayList<String> error = new ArrayList<String>();
 		//セッションの取得
 		HttpSession session = request.getSession(false);
-		//エラーが取得できる場合は初期化
-		session.removeAttribute("errormessage");
+
 		//ロジックのインスタンス生成
 		RemoveItemLogic logic = new RemoveItemLogic();
 		
@@ -38,11 +36,11 @@ public class RemoveItemComplete extends HttpServlet {
 			try{
 				logic.removeItem(targetItems);
 			}catch(SQLException|NamingException e){
+				e.printStackTrace();
 				error.add("(RemoveItemCompleteServlet)削除処理が失敗しました。DAOの呼び出しに失敗している可能性があります。");
 			}
 		}else{
 			error.add("(RemoveItemCompleteServlet)削除対象の商品リストを取得できませんでした。");
-			
 		}
 		session.removeAttribute("targetItems");
 		if(!error.isEmpty()){
