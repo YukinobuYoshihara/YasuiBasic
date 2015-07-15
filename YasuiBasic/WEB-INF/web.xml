@@ -20,7 +20,7 @@
 	</error-page>
 
 	<error-page>
-		<exception-type>javax.servlet.ServletException</exception-type>
+		<exception-type>java.lang.Exception</exception-type>
 		<location>/WEB-INF/jsp/common/exception.jsp</location>
 	</error-page>
 	<!--Application Initial Parameter -->
