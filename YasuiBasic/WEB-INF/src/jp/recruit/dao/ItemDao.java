@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.sql.Savepoint;
 import java.util.ArrayList;
 
 import jp.recruit.bean.ItemBean;
@@ -20,8 +18,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.naming.NamingException;
-
-import oracle.net.aso.i;
 
 public class ItemDao extends BaseDao{
 	final int FAILURE = -1;
