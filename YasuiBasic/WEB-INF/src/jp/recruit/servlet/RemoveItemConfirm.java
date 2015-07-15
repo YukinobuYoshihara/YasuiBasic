@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
-
 import jp.recruit.bean.ItemBean;
 import jp.recruit.logic.ListItemLogic;
 import jp.recruit.misc.CheckUtil;
