@@ -20,19 +20,19 @@ import jp.recruit.logic.LoginCheckLogic;
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = -856700274893456786L;
 
-	protected void doPost(HttpServletRequest req , HttpServletResponse res)
+	protected void doPost(HttpServletRequest request , HttpServletResponse response)
 			throws ServletException,IOException {
 		//ログインフラグを設定（ログイン成功時のみtrueになる）
 		Boolean isLogin = false;
 
-		req.setCharacterEncoding("UTF-8");
-		res.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
 		//エラー用のArrayList
 		ArrayList<String> error = new ArrayList<String>();
 		ServletContext sc=null;
 		String destination=null;
 		//セッションの取得
-		HttpSession session = req.getSession(true);
+		HttpSession session = request.getSession(true);
 		//エラーを引き継ぐ場合にArrayListにマージ処理
 		@SuppressWarnings("unchecked")
 		ArrayList<String> temp = (ArrayList<String>)session.getAttribute("errormessage");
@@ -55,9 +55,9 @@ public class Login extends HttpServlet {
 		//ServletContextオブジェクトを取得
 		sc = this.getServletContext();
 		//顧客IDの取得
-		username=req.getParameter("username").trim();
+		username=request.getParameter("username").trim();
 		//パスワードの取得
-		password=req.getParameter("password").trim();
+		password=request.getParameter("password").trim();
 
 		//ユーザー名とパスワードが空でなかったらログインチェック
 		if((username!=null&&!username.isEmpty())&&(password!=null&&!password.isEmpty())){
@@ -70,7 +70,7 @@ public class Login extends HttpServlet {
 					isLogin=true;
 					//セッションを再作成する
 					session.invalidate();
-					session = req.getSession(true);
+					session = request.getSession(true);
 					//ログイン属性詰め直し
 					session.setAttribute("username", userBean.getName());
 					session.setAttribute("descript", userBean.getDescript());
@@ -112,9 +112,19 @@ public class Login extends HttpServlet {
 		//コンテンツ情報をセッションに設定
 		session.setAttribute("contents", contentsMap);
 
-		System.out.println("リダイレクト先："+req.getContextPath()+destination);
-		res.sendRedirect(req.getContextPath()+destination);
-		return;
+		if(!error.isEmpty()){//異常系
+			request.setAttribute("errormessage", error);
+			System.out.println("リダイレクト先："+request.getContextPath()+destination);
+			//異常系はエラーメッセージを持たせるため、フォワード
+			sc.getRequestDispatcher(destination).forward(request, response);
+			return;
+		}else{//正常系
+			System.out.println("リダイレクト先："+request.getContextPath()+destination);
+			response.sendRedirect(request.getContextPath()+destination);
+			return;			
+		}
+		
+
 	}
 }
 
