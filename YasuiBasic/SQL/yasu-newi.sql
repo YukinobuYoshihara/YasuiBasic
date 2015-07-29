@@ -4,6 +4,11 @@ DROP TABLE stock CASCADE CONSTRAINTS;
 DROP TABLE contents CASCADE CONSTRAINTS;
 DROP TABLE orders CASCADE CONSTRAINTS;
 
+DROP SEQUENCE seq_item_id;
+DROP SEQUENCE seq_oid;
+
+commit;
+
 create table yasui_user(
 	user_id nchar(5) ,
 	name nvarchar2(20),
@@ -60,15 +65,15 @@ create table orders  (
 
 commit;
 
-INSERT INTO yasui_user VALUES ('A0001','admin','password',n'ŠÇ—Ò','administrator',0);
-INSERT INTO yasui_user VALUES ('C0001','customer1','password',n'ì^i','user',0);
-INSERT INTO yasui_user VALUES ('C0002','customer2','password',n'–{“cŒ\—C','user',0);
+INSERT INTO yasui_user VALUES ('A0001','admin','password',n'ï¿½Ç—ï¿½ï¿½ï¿½','administrator',0);
+INSERT INTO yasui_user VALUES ('C0001','customer1','password',n'ï¿½ï¿½ï¿½ï¿½^ï¿½i','user',0);
+INSERT INTO yasui_user VALUES ('C0002','customer2','password',n'ï¿½{ï¿½cï¿½\ï¿½C','user',0);
 
-INSERT INTO item VALUES ('00001',n'ƒLƒbƒ`ƒ“ƒe[ƒuƒ‹i’ƒj','http://localhost:8080/YasuiRLS/img/00001.jpg','100x60x70',19800,0);
-INSERT INTO item VALUES ('00002',n'ƒfƒXƒNiƒuƒ‰ƒEƒ“j','http://localhost:8080/YasuiRLS/img/00002.jpg','100x60x70',123500,0);
-INSERT INTO item VALUES ('00003',n'‚¢‚·iÂj','http://localhost:8080/YasuiRLS/img/00003.jpg','100x60x70',9800,0);
-INSERT INTO item VALUES ('00004',n'ƒxƒbƒh','http://localhost:8080/YasuiRLS/img/00004.jpg','100x60x70',354800,0);
-INSERT INTO item VALUES ('00005',n'ƒ\ƒtƒ@[','http://localhost:8080/YasuiRLS/img/00005.jpg','100x60x70',99999,0);
+INSERT INTO item VALUES ('00001',n'ï¿½Lï¿½bï¿½`ï¿½ï¿½ï¿½eï¿½[ï¿½uï¿½ï¿½ï¿½iï¿½ï¿½ï¿½j','http://localhost:8080/YasuiRLS/img/00001.jpg','100x60x70',19800,0);
+INSERT INTO item VALUES ('00002',n'ï¿½fï¿½Xï¿½Nï¿½iï¿½uï¿½ï¿½ï¿½Eï¿½ï¿½ï¿½j','http://localhost:8080/YasuiRLS/img/00002.jpg','100x60x70',123500,0);
+INSERT INTO item VALUES ('00003',n'ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½Âj','http://localhost:8080/YasuiRLS/img/00003.jpg','100x60x70',9800,0);
+INSERT INTO item VALUES ('00004',n'ï¿½xï¿½bï¿½h','http://localhost:8080/YasuiRLS/img/00004.jpg','100x60x70',354800,0);
+INSERT INTO item VALUES ('00005',n'ï¿½\ï¿½tï¿½@ï¿½[','http://localhost:8080/YasuiRLS/img/00005.jpg','100x60x70',99999,0);
 
 INSERT INTO stock VALUES ('00001',25,0);
 INSERT INTO stock VALUES ('00002',25,0);
@@ -76,38 +81,42 @@ INSERT INTO stock VALUES ('00003',25,0);
 INSERT INTO stock VALUES ('00004',25,0);
 INSERT INTO stock VALUES ('00005',0,0);
 
-INSERT INTO contents VALUES ('Login','P0001:ƒƒOƒCƒ“','ƒƒOƒCƒ“','ƒƒOƒCƒ“ˆ—‚ğs‚¢‚Ü‚·B','user',1);
-INSERT INTO contents VALUES ('LoginError','ƒƒOƒCƒ“ƒGƒ‰[','ƒƒOƒCƒ“, ƒGƒ‰[','ƒƒOƒCƒ“ƒGƒ‰[‰æ–Ê‚Å‚·B','user',1);
-INSERT INTO contents VALUES ('ListItem','P0002:¤•iˆê——','¤•iˆê——, ƒƒCƒ“, ƒgƒbƒv','’ÊM”Ì”„ƒVƒXƒeƒ€‚ÌƒƒCƒ“ƒƒjƒ…[‚Å‚·B','user',0);
-INSERT INTO contents VALUES ('PurchaseConfirm','P0003:’•¶‚ÌŠm”F','‰Æ‹ï,’•¶,Šm”F','’•¶‚ÌŠm”F‚ğs‚¢‚Ü‚·','user',0);
-INSERT INTO contents VALUES ('PurchaseStoreDb','P0004:’•¶‚ÌŠ®—¹','‰Æ‹ï,’•¶','’•¶‚ğŠ®—¹‚µ‚Ü‚·','user',0);
-INSERT INTO contents VALUES ('PurchaseComplete','P0004:’•¶‚ÌŠ®—¹','‰Æ‹ï,’•¶','’•¶‚ğŠ®—¹‚µ‚Ü‚·','user',0);
-INSERT INTO contents VALUES ('Logout','P0005:ƒƒOƒAƒEƒg','ƒƒOƒAƒEƒg','’ÊM”Ì”„ƒVƒXƒeƒ€‚©‚ç‚ÌƒƒOƒAƒEƒgˆ—‚ğs‚¢‚Ü‚·B','user',0);
-INSERT INTO contents VALUES ('AddItem','A0001:V‹K¤•i“o˜^','V‹K, ¤•i, “o˜^','V‹K¤•i“o˜^‚ğs‚¢‚Ü‚·B','administrator',0);
-INSERT INTO contents VALUES ('AddItemConfirm','A0002:V‹K¤•i“o˜^‚ÌŠm”F','V‹K, ¤•i, “o˜^','V‹K¤•i“o˜^‚ÌŠm”F‚ğs‚¢‚Ü‚·','administrator',0);
-INSERT INTO contents VALUES ('AddItemStoreDb','A0003:V‹K¤•i“o˜^‚ÌŠ®—¹','V‹K, ¤•i, “o˜^','V‹K¤•i“o˜^‚ğŠ®—¹‚µ‚Ü‚·','administrator',0);
-INSERT INTO contents VALUES ('AddItemComplete','A0003:V‹K¤•i“o˜^‚ÌŠ®—¹','V‹K, ¤•i, “o˜^','V‹K¤•i“o˜^‚ğŠ®—¹‚µ‚Ü‚·','administrator',0);
-INSERT INTO contents VALUES ('ChangeStock','A0004:İŒÉ”—Ê•ÏX','İŒÉ,”—Ê,•ÏX ¤•i, “o˜^','İŒÉ”—Ê‚Ì•ÏX‚ğs‚¢‚Ü‚·B','administrator',0);
-INSERT INTO contents VALUES ('ChangeStockConfirm','A0005:İŒÉ”—Ê•ÏX‚ÌŠm”F','İŒÉ,”—Ê,•ÏX ¤•i, “o˜^','İŒÉ”—Ê•ÏX‚ÌŠm”F‚ğs‚¢‚Ü‚·','administrator',0);
-INSERT INTO contents VALUES ('ChangeStockStoreDb','A0006:İŒÉ”—Ê•ÏX‚ÌŠ®—¹','İŒÉ,”—Ê,•ÏX ¤•i, “o˜^','İŒÉ”—Ê•ÏX‚ğŠ®—¹‚µ‚Ü‚·','administrator',0);
-INSERT INTO contents VALUES ('ChangeStockComplete','A0006:İŒÉ”—Ê•ÏX‚ÌŠ®—¹','İŒÉ,”—Ê,•ÏX ¤•i, “o˜^','İŒÉ”—Ê•ÏX‚ğŠ®—¹‚µ‚Ü‚·','administrator',0);
-INSERT INTO contents VALUES ('RemoveItem','A0007:¤•iíœ','¤•i, íœ','¤•i‚Ìíœ‚ğs‚¢‚Ü‚·B','administrator',0);
-INSERT INTO contents VALUES ('RemoveItemConfirm','A0008:¤•iíœ‚ÌŠm”F','¤•i, íœ','¤•iíœ‚ÌŠm”F‚ğs‚¢‚Ü‚·','administrator',0);
-INSERT INTO contents VALUES ('RemoveItemComplete','A0009:¤•iíœ‚ÌŠ®—¹','¤•i, íœ','¤•iíœ‚ğŠ®—¹‚µ‚Ü‚·','administrator',0);
-INSERT INTO contents VALUES ('RemoveItemStoreDb','A0009:¤•iíœ‚ÌŠ®—¹','¤•i, íœ','¤•iíœ‚ğŠ®—¹‚µ‚Ü‚·','administrator',0);
+INSERT INTO contents VALUES ('Login','P0001:ï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½','ï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½','ï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B','user',1);
+INSERT INTO contents VALUES ('LoginError','ï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[','ï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½, ï¿½Gï¿½ï¿½ï¿½[','ï¿½ï¿½ï¿½Oï¿½Cï¿½ï¿½ï¿½Gï¿½ï¿½ï¿½[ï¿½ï¿½Ê‚Å‚ï¿½ï¿½B','user',1);
+INSERT INTO contents VALUES ('ListItem','P0002:ï¿½ï¿½ï¿½iï¿½ê——','ï¿½ï¿½ï¿½iï¿½ê——, ï¿½ï¿½ï¿½Cï¿½ï¿½, ï¿½gï¿½bï¿½v','ï¿½ÊMï¿½Ì”ï¿½ï¿½Vï¿½Xï¿½eï¿½ï¿½ï¿½Ìƒï¿½ï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½jï¿½ï¿½ï¿½[ï¿½Å‚ï¿½ï¿½B','user',0);
+INSERT INTO contents VALUES ('PurchaseConfirm','P0003:ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠmï¿½F','ï¿½Æ‹ï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½mï¿½F','ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠmï¿½Fï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½','user',0);
+INSERT INTO contents VALUES ('PurchaseStoreDb','P0004:ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠï¿½ï¿½ï¿½','ï¿½Æ‹ï¿½,ï¿½ï¿½ï¿½ï¿½','ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½','user',0);
+INSERT INTO contents VALUES ('PurchaseComplete','P0004:ï¿½ï¿½ï¿½ï¿½ï¿½ÌŠï¿½ï¿½ï¿½','ï¿½Æ‹ï¿½,ï¿½ï¿½ï¿½ï¿½','ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½','user',0);
+INSERT INTO contents VALUES ('Logout','P0005:ï¿½ï¿½ï¿½Oï¿½Aï¿½Eï¿½g','ï¿½ï¿½ï¿½Oï¿½Aï¿½Eï¿½g','ï¿½ÊMï¿½Ì”ï¿½ï¿½Vï¿½Xï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìƒï¿½ï¿½Oï¿½Aï¿½Eï¿½gï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B','user',0);
+INSERT INTO contents VALUES ('AddItem','A0001:ï¿½Vï¿½Kï¿½ï¿½ï¿½iï¿½oï¿½^','ï¿½Vï¿½K, ï¿½ï¿½ï¿½i, ï¿½oï¿½^','ï¿½Vï¿½Kï¿½ï¿½ï¿½iï¿½oï¿½^ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B','administrator',0);
+INSERT INTO contents VALUES ('AddItemConfirm','A0002:ï¿½Vï¿½Kï¿½ï¿½ï¿½iï¿½oï¿½^ï¿½ÌŠmï¿½F','ï¿½Vï¿½K, ï¿½ï¿½ï¿½i, ï¿½oï¿½^','ï¿½Vï¿½Kï¿½ï¿½ï¿½iï¿½oï¿½^ï¿½ÌŠmï¿½Fï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½','administrator',0);
+INSERT INTO contents VALUES ('AddItemStoreDb','A0003:ï¿½Vï¿½Kï¿½ï¿½ï¿½iï¿½oï¿½^ï¿½ÌŠï¿½ï¿½ï¿½','ï¿½Vï¿½K, ï¿½ï¿½ï¿½i, ï¿½oï¿½^','ï¿½Vï¿½Kï¿½ï¿½ï¿½iï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½','administrator',0);
+INSERT INTO contents VALUES ('AddItemComplete','A0003:ï¿½Vï¿½Kï¿½ï¿½ï¿½iï¿½oï¿½^ï¿½ÌŠï¿½ï¿½ï¿½','ï¿½Vï¿½K, ï¿½ï¿½ï¿½i, ï¿½oï¿½^','ï¿½Vï¿½Kï¿½ï¿½ï¿½iï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½','administrator',0);
+INSERT INTO contents VALUES ('ChangeStock','A0004:ï¿½İŒÉï¿½ï¿½Ê•ÏX','ï¿½İŒï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½ÏX ï¿½ï¿½ï¿½i, ï¿½oï¿½^','ï¿½İŒÉï¿½ï¿½Ê‚Ì•ÏXï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B','administrator',0);
+INSERT INTO contents VALUES ('ChangeStockConfirm','A0005:ï¿½İŒÉï¿½ï¿½Ê•ÏXï¿½ÌŠmï¿½F','ï¿½İŒï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½ÏX ï¿½ï¿½ï¿½i, ï¿½oï¿½^','ï¿½İŒÉï¿½ï¿½Ê•ÏXï¿½ÌŠmï¿½Fï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½','administrator',0);
+INSERT INTO contents VALUES ('ChangeStockStoreDb','A0006:ï¿½İŒÉï¿½ï¿½Ê•ÏXï¿½ÌŠï¿½ï¿½ï¿½','ï¿½İŒï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½ÏX ï¿½ï¿½ï¿½i, ï¿½oï¿½^','ï¿½İŒÉï¿½ï¿½Ê•ÏXï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½','administrator',0);
+INSERT INTO contents VALUES ('ChangeStockComplete','A0006:ï¿½İŒÉï¿½ï¿½Ê•ÏXï¿½ÌŠï¿½ï¿½ï¿½','ï¿½İŒï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½ÏX ï¿½ï¿½ï¿½i, ï¿½oï¿½^','ï¿½İŒÉï¿½ï¿½Ê•ÏXï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½','administrator',0);
+INSERT INTO contents VALUES ('RemoveItem','A0007:ï¿½ï¿½ï¿½iï¿½íœ','ï¿½ï¿½ï¿½i, ï¿½íœ','ï¿½ï¿½ï¿½iï¿½Ìíœï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B','administrator',0);
+INSERT INTO contents VALUES ('RemoveItemConfirm','A0008:ï¿½ï¿½ï¿½iï¿½íœï¿½ÌŠmï¿½F','ï¿½ï¿½ï¿½i, ï¿½íœ','ï¿½ï¿½ï¿½iï¿½íœï¿½ÌŠmï¿½Fï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Ü‚ï¿½','administrator',0);
+INSERT INTO contents VALUES ('RemoveItemComplete','A0009:ï¿½ï¿½ï¿½iï¿½íœï¿½ÌŠï¿½ï¿½ï¿½','ï¿½ï¿½ï¿½i, ï¿½íœ','ï¿½ï¿½ï¿½iï¿½íœï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½','administrator',0);
+INSERT INTO contents VALUES ('RemoveItemStoreDb','A0009:ï¿½ï¿½ï¿½iï¿½íœï¿½ÌŠï¿½ï¿½ï¿½','ï¿½ï¿½ï¿½i, ï¿½íœ','ï¿½ï¿½ï¿½iï¿½íœï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚ï¿½','administrator',0);
 
 commit;
 
 CREATE SEQUENCE seq_item_id
-MINVALUE 1
-START WITH 1
+START WITH 6
 INCREMENT BY 1
+MINVALUE 6
+MAXVALUE 99999
+NOCYCLE
 CACHE 10;
 
 CREATE SEQUENCE seq_oid
-MINVALUE 1
 START WITH 1
 INCREMENT BY 1
+MINVALUE 1
+MAXVALUE 99999999
+CYCLE
 CACHE 10;
 
 commit;

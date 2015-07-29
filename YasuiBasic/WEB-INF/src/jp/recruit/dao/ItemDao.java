@@ -161,8 +161,6 @@ public class ItemDao extends BaseDao{
 					throw new ConsistencyErrorException("商品情報と在庫情報の登録の整合性が取れません");
 				}
 				con.commit();
-				pstmt3.close();
-				pstmt4.close();
 			}catch(SQLException e){
 				con.rollback();
 				throw new SQLException(e);
@@ -202,23 +200,9 @@ public class ItemDao extends BaseDao{
 			ud.closeConnection();
 		}
 
-		//注文ID（oid）の作成
-		StringBuffer sb = new StringBuffer();
-		//日時情報を添付（17ケタ） ※Java8必須
-		LocalDateTime now = LocalDateTime.now();
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-		sb.append(now.format(dateTimeFormatter));
-
-		//UIDをoidに添付（5ケタ）
-		sb.append(uid);
-
-		//競合対策で、3桁のランダムな数値をoidに添付する（3ケタ）
-		DecimalFormat df = new DecimalFormat("000");
-		sb.append( df.format( (int)( Math.random() * 1000 )));
-
-		//注文IDを文字列化する（計25ケタ）
-		String oid = sb.toString();
-		System.out.println("(ItemDao#insertOrder)作成された注文ID:"+oid);
+		//注文IDを取得する（計25ケタ）
+		String oid = this.getNewOID();
+		
 		PreparedStatement pstmt=null;
 		try{
 			con.setAutoCommit(false);
@@ -339,7 +323,7 @@ public class ItemDao extends BaseDao{
 		PreparedStatement pstmtUpdate=null;
 		ResultSet rs=null;
 
-		//注文IDに添付するuidを取得（5ケタ）
+		//注文テーブルに格納するuidを取得（5ケタ）（ユーザー名はセッションから取得できているので）
 		UserDao ud = new UserDao();
 		try{
 			ud.getConnection();
@@ -347,7 +331,8 @@ public class ItemDao extends BaseDao{
 		}finally{
 			ud.closeConnection();
 		}
-
+		String oid = this.getNewOID();
+		
 		//行ロックをかけるSQL(select ～ for Update）をStringBufferで作成
 		String locksql1 = "select item_id,stock_num,is_delete from stock where item_id in (";
 		String locksql2 = ") for update";
@@ -391,23 +376,7 @@ public class ItemDao extends BaseDao{
 			}else{
 				System.out.println("ロックできた");
 			}
-			//注文ID（oid）の作成
-			StringBuffer sb = new StringBuffer();
-			//日時情報を添付（17ケタ） ※Java8必須
-			LocalDateTime now = LocalDateTime.now();
-			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-			sb.append(now.format(dateTimeFormatter));
 
-			//UIDをoidに添付（5ケタ）
-			sb.append(uid);
-
-			//競合対策で、3桁のランダムな数値をoidに添付する（3ケタ）
-			DecimalFormat df = new DecimalFormat("000");
-			sb.append( df.format( (int)( Math.random() * 1000 )));
-
-			//注文IDを文字列化する（計25ケタ）
-			String oid = sb.toString();
-			System.out.println("(ItemDao#processOrder)作成された注文ID:"+oid);
 			//注文のListから商品情報を1つずつ取り出して処理を行う
 			for(ItemBean itemBean: order){
 				//新しい在庫を計算
@@ -528,7 +497,13 @@ public class ItemDao extends BaseDao{
 		}
 	}
 
-	// 商品情報削除:戻り値は削除した行数
+	/**
+	 * 指定された商品情報Beanの商品情報を削除する
+	 * @param ListtargetItems
+	 * @return 削除した行数
+	 * @throws SQLException
+	 */
+	// 
 	public int removeItemList(ArrayList<ItemBean> targetItems) throws SQLException{
 		String sql1 = "UPDATE item SET item.is_delete = 1 where item_id = ?";
 		String sql2 = "UPDATE stock SET stock.is_delete = 1 where item_id = ?";
@@ -618,8 +593,6 @@ public class ItemDao extends BaseDao{
 			rs = pstmt.executeQuery();
 			if(rs.next())
 				temp = rs.getString("max(item_id)");
-			rs.close();
-			pstmt.close();
 		}finally{
 			if(rs!=null){
 				rs.close();
@@ -633,5 +606,58 @@ public class ItemDao extends BaseDao{
 		nextId = df.format(currentMax+1);
 		return nextId;
 	}
-	
+	/**
+	 * 追加する商品用に商品IDを取得する(シーケンスを使用するバージョン）
+	 * @return 文字列化した商品ID（5桁揃え）
+	 * @throws SQLException
+	 * @throws NumberFormatException
+	 */
+	public String getNextItemIdBySequence()throws SQLException,NumberFormatException{
+		String sql = "select seq_item_id.nextval from dual";
+		String nextId = null;
+		ResultSet rs=null;
+		int nextMax=-1;//ダミー
+		PreparedStatement pstmt=null;
+		try{
+			pstmt = con.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			if(rs.next())
+				nextMax = rs.getInt("nextval");
+		}finally{
+			if(rs!=null){
+				rs.close();
+			}
+			if(pstmt!=null){
+				pstmt.close();
+			}
+		}
+		DecimalFormat df = new DecimalFormat("00000");
+		nextId = df.format(nextMax);
+		return nextId;
+	}
+	public String getNewOID() throws SQLException{
+		String oid=null;
+		//注文ID（oid）の作成
+		StringBuffer sb = new StringBuffer();
+		//日時情報を添付（17ケタ） ※Java8必須
+		LocalDateTime now = LocalDateTime.now();
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+		sb.append(now.format(dateTimeFormatter));
+		//注文連番（８桁）を取得
+		String sql = "select SEQ_OID.nextval from dual";
+		int oidint=0;
+		PreparedStatement pstmt=null;
+		pstmt=con.prepareStatement(sql);
+		ResultSet rs = pstmt.executeQuery();
+		if(rs.next()){
+			oidint = rs.getInt("nextval");
+		}
+		DecimalFormat df = new DecimalFormat("00000000");
+		sb.append(df.format(oidint));
+		//作成された注文IDを文字列に変換
+		oid=sb.toString();
+		System.out.println("(ItemDao#getNewOID)作成された注文ID:"+oid);		
+		return oid;
+	}
+
 }

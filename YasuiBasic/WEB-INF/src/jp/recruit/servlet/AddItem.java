@@ -34,18 +34,18 @@ public class AddItem extends HttpServlet {
     try{
       ItemDao dao = new ItemDao();
       dao.getConnection();
-      nextId = dao.getNextItemId();
+      nextId = dao.getNextItemIdBySequence();
       dao.closeConnection();
     } catch (NamingException|SQLException e) {
-		error.add("(AddItem)"+e.getMessage()+":新規商品IDの取得で不具合が発生しています");
+    	String messageString = "(AddItem)"+e.getMessage()+":新規商品IDの取得で不具合が発生しています";
+		error.add(messageString);
 		e.printStackTrace();
-		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
-		return;
+		throw new ServletException("messageString", e);
 	}
     //商品IDをRequestに格納
     request.setAttribute("nextId", nextId);
-    //完成したエラーメッセージ用ArrayListをセッションに格納
-    session.setAttribute("errormessage",error);
+    //完成したエラーメッセージ用ArrayListをrequestに格納
+    request.setAttribute("errormessage",error);
     //ServletContextオブジェクトを取得
     sc = this.getServletContext();
     //RequestDispatcherオブジェクトを取得

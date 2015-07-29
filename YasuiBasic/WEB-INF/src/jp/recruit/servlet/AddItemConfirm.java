@@ -27,7 +27,6 @@ public class AddItemConfirm extends HttpServlet {
 		//セッションの取得
 		HttpSession session = request.getSession(false);
 		
-		session.removeAttribute("errormessage");
 		//セッションに残ったフラグを消去
 		session.removeAttribute("canAdd");
 
@@ -134,8 +133,8 @@ public class AddItemConfirm extends HttpServlet {
 			System.out.println("エラーのあった場合");
 			destination="/AddItem";
 			session.setAttribute("canAdd", Boolean.valueOf(false));
-			//完成したエラーメッセージ用ArrayListをセッションに格納
-			session.setAttribute("errormessage",error);
+			//完成したエラーメッセージ用ArrayListをrequestに格納
+			request.setAttribute("errormessage",error);
 		}
 
 		//ServletContextオブジェクトを取得

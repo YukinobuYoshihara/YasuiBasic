@@ -32,7 +32,6 @@ public class AddItemComplete extends HttpServlet {
 		ArrayList<String> error = new ArrayList<String>();
 		//セッションの取得
 		HttpSession session = request.getSession(false);
-		session.removeAttribute("errormessage");
 
 		//作業用Beanの生成
 		ItemBean newItem  = new ItemBean();
@@ -61,8 +60,8 @@ public class AddItemComplete extends HttpServlet {
 		}
 		if(!error.isEmpty()){
 			destination="/AddItem";
-			//完成したエラーメッセージ用ArrayListをセッションに格納
-			session.setAttribute("errormessage",error);
+			//完成したエラーメッセージ用ArrayListをrequestに格納
+			request.setAttribute("errormessage",error);
 		}
 		//不要になったitemsを削除
 		session.removeAttribute("items");
