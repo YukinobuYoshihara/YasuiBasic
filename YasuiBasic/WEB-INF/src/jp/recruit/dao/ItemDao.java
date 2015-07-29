@@ -633,4 +633,5 @@ public class ItemDao extends BaseDao{
 		nextId = df.format(currentMax+1);
 		return nextId;
 	}
+	
 }

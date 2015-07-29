@@ -19,7 +19,6 @@
 			<c:remove var="errormessage" />
 			<%--表示が終わったエラーメッセージはセッションから削除する --%>
 		</c:if>
-
 	</c:if>
 	<c:if test="${canOrder == true}">
 		<h2>下記の内容で発注しますか？</h2>
@@ -34,7 +33,7 @@
 				<th>注文数</th>
 				<th>小計</th>
 			</tr>
-			<c:set var="sum" value='<%=0%>' />
+			<c:set var="sum" value='0' />
 			<c:forEach var="orderitem" items="${items}" varStatus="status">
 				<tr>
 					<td><c:out value="${orderitem.itemId}" /></td>
