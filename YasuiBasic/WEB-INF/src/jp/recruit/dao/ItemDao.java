@@ -229,11 +229,11 @@ public class ItemDao extends BaseDao{
 			}
 			for(int i=0;i<items.size();i++){
 				ItemBean tempBean = items.get(i);
-				String sql = "insert into orders (oid,user_name,item_id,quantity,is_delivery)"+
+				String sql = "insert into orders (oid,user_id,item_id,quantity,is_delivery)"+
 						" values ( ?,?,?,?,0)";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setString(1,oid);
-				pstmt.setString(2,user_name);
+				pstmt.setString(2,uid);
 				pstmt.setString(3,tempBean.getItemId());
 				pstmt.setInt(4, tempBean.getOrder());
 				int tmpResult = pstmt.executeUpdate();
@@ -365,7 +365,7 @@ public class ItemDao extends BaseDao{
 		//在庫更新のSQL
 		String updateSql = "update stock set stock_num=? where item_id=?";
 		//注文情報挿入のSQL
-		String insertSql = "insert into orders (oid,item_id,user_name,quantity,is_delivery)"+
+		String insertSql = "insert into orders (oid,item_id,user_id,quantity,is_delivery)"+
 				" values ( ?,?,?,?,0)";
 
 		try{
@@ -431,7 +431,7 @@ public class ItemDao extends BaseDao{
 				//注文情報の挿入（OIDと商品IDの複合主キーなのでOIDは1つの注文に1つで良い）
 				pstmtInsert.setString(1,oid);
 				pstmtInsert.setString(2,itemBean.getItemId());
-				pstmtInsert.setString(3,user_name);
+				pstmtInsert.setString(3,uid);
 				pstmtInsert.setInt(4, itemBean.getOrder());
 				System.err.println("oid:"+oid+"/商品ID："+itemBean.getItemId()+"/ユーザー名："+user_name+"/注文数："+itemBean.getOrder());
 				int tempResult2 = pstmtInsert.executeUpdate();
