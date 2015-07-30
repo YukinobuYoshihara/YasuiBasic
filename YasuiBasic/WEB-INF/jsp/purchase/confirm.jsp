@@ -16,8 +16,6 @@
 				<span class="errormsg">(Error)：${message}</span>
 				<br />
 			</c:forEach>
-			<c:remove var="errormessage" />
-			<%--表示が終わったエラーメッセージはセッションから削除する --%>
 		</c:if>
 	</c:if>
 	<c:if test="${canOrder == true}">
@@ -62,11 +60,11 @@
 	</c:if>
 	<div style="display:inline-flex">
 	<form method="GET" action="ListItem">
-		<input type="submit" name="goindex" value="戻る" style="width: 100px;" />
+		<input type="submit" name="goindex" value="戻る"  />
 	</form>
 	<c:if test="${canOrder == true}">
 		<form method="POST" action="PurchaseComplete">
-			<input type="submit" name="order" value="発注する" style="width: 100px;" />
+			<input type="submit" name="order" value="発注する"  />
 		</form>
 	</c:if>
 	</form>

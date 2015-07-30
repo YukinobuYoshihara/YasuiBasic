@@ -8,8 +8,7 @@
 	<c:import url="/WEB-INF/jsp/common/header.jsp" />
 	<c:import url="/WEB-INF/jsp/common/navmenu.jsp" />
 	<c:if test="${not empty errormessage}">
-		<c:forEach var="message" items="${errormessage}"
-			varStatus="statusError">
+		<c:forEach var="message" items="${errormessage}">
 			<span class="errormsg">(エラー)：${message}</span>
 			<br />
 		</c:forEach>
@@ -44,7 +43,7 @@
 						</c:when>
 						<c:otherwise>
 							<td><c:out value="${item.stock}" /></td>
-							<td><input type="number" name="${fn:escapeXml(item.itemId)}" size="25" maxlength="8"
+							<td><input type="number" name="${fn:escapeXml(item.itemId)}"  maxlength="8"
 								min="0" max="${item.stock}" style="text-align: right" value="${fn:escapeXml(item.order)}" /></td>
 						</c:otherwise>
 					</c:choose>

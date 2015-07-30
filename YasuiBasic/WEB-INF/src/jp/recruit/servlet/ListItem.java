@@ -45,16 +45,20 @@ public class ListItem extends HttpServlet {
 				itemList=listItemLogic.getItemList();
 			}
 		}catch(SQLException|NamingException|IOException e){
+			//ユーザー系画面では安易に例外をスローせず、エラーメッセージの処理を行う
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
-			return;
+			error.add("初期の商品情報一覧取得に失敗しました");
+			destination="/index";
 		}
 
 		//商品一覧は一時的なものなので、リクエストにセットしておく
 		request.setAttribute("items", itemList);
-		//エラーをセッションに格納
-		request.setAttribute("errormessage",error);
-
+		//エラーが空じゃなかったら
+		if(!error.isEmpty()){
+			//エラーをセッションに格納
+			request.setAttribute("errormessage",error);
+		}
+		
 		//ServletContextオブジェクトを取得
 		sc = this.getServletContext();
 		//RequestDispatcherオブジェクトを取得

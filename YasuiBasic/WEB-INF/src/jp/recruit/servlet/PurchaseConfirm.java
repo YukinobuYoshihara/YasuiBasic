@@ -8,15 +8,16 @@ import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import jp.recruit.bean.*;
+import jp.recruit.bean.ItemBean;
 import jp.recruit.logic.ListItemLogic;
 import jp.recruit.misc.CheckUtil;
 
-public class PurchaseConfirm extends YasuiServlet {
+public class PurchaseConfirm extends HttpServlet {
 	private static final long serialVersionUID = 7612802445832537582L;
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -61,6 +62,8 @@ public class PurchaseConfirm extends YasuiServlet {
 					}
 				}
 			}
+			/*
+			//注文情報チェックのチェック用コード
 			System.err.println("itemsのリストマージ確認（itemsにちゃんと注文数が入っている）");
 			for(ItemBean orderItem:items){
 				System.err.println("商品名"+orderItem.getItemName()+"の注文数："+orderItem.getOrder());
@@ -69,6 +72,7 @@ public class PurchaseConfirm extends YasuiServlet {
 			for(ItemBean temp:items){
 				System.out.println("商品名："+temp.getItemName()+" 注文数："+temp.getOrder());
 			}
+			*/
 			//checkUtilのエラーをエラーリストに追加
 			error.addAll(cu.getErrors());
 			//itemsの論理チェック（この段階で数値は必ず入っている
@@ -89,8 +93,6 @@ public class PurchaseConfirm extends YasuiServlet {
 					System.err.println("注文数"+orderedItems.size());
 				}
 			}
-
-
 			// 注文が0行だったら注文可能フラグをfalse
 			if (orderedItems.size() == 0){
 				System.out.println("有効注文0");
@@ -99,17 +101,12 @@ public class PurchaseConfirm extends YasuiServlet {
 		} catch (NamingException|SQLException e) {
 			error.add("(PurchaseConfirm)"+e.getMessage()+":商品情報の取得で不具合が発生しています");
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
-			return;
 		} catch (NumberFormatException e) {
 			error.add("(PurchaseConfirm)"+e.getMessage()+":注文情報の処理で不具合が発生しています");
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
-			return;
 		}
 		//何らかのエラーがあったらエラーメッセージを指定して差し戻し
 		if(!error.isEmpty()){
-			System.err.println("エラーメッセージあったよ");
 			request.setAttribute("errormessage",error);
 			destination = "/WEB-INF/jsp/purchase/list.jsp";
 			request.setAttribute("canOrder", Boolean.valueOf(false));

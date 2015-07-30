@@ -52,7 +52,7 @@ public class ChangeStockComplete extends HttpServlet {
 		if(!error.isEmpty()){
 			destination="/ChangeStock";
 			session.setAttribute("update", Boolean.valueOf(false));
-			//完成したエラーメッセージ用ArrayListをセッションに格納
+			//完成したエラーメッセージ用ArrayListをrequestに格納
 			request.setAttribute("errormessage",error);
 		}
 		session.removeAttribute("changeStock");

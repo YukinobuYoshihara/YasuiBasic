@@ -122,8 +122,6 @@ public class Login extends HttpServlet {
 			response.sendRedirect(request.getContextPath()+destination);
 			return;			
 		}
-		
-
 	}
 }
 

@@ -10,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import jp.recruit.dao.ItemDao;
 
@@ -26,9 +25,6 @@ public class AddItem extends HttpServlet {
     destination = "/WEB-INF/jsp/addItem/AddItem.jsp";
     //エラーメッセージ処理クラスのインスタンス化
     ArrayList<String> error = new ArrayList<String>();
-    //セッションの取得
-    HttpSession session = request.getSession(false);
-    session.removeAttribute("canAdd");
 
     //追加するIDを準備する
     try{
@@ -40,7 +36,7 @@ public class AddItem extends HttpServlet {
     	String messageString = "(AddItem)"+e.getMessage()+":新規商品IDの取得で不具合が発生しています";
 		error.add(messageString);
 		e.printStackTrace();
-		throw new ServletException("messageString", e);
+		throw new ServletException(messageString, e);
 	}
     //商品IDをRequestに格納
     request.setAttribute("nextId", nextId);

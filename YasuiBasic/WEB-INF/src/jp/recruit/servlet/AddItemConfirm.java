@@ -19,7 +19,7 @@ public class AddItemConfirm extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request , HttpServletResponse response)
 			throws ServletException,IOException {
-		ServletContext sc=null;
+		
 		//デフォルトの転送先;
 		String destination = "/WEB-INF/jsp/addItem/AddItemConfirm.jsp";
 		//エラーメッセージ処理クラスのインスタンス化
@@ -125,20 +125,22 @@ public class AddItemConfirm extends HttpServlet {
 				newItem.setItemSize(size);
 				newItem.setPrice(price);
 				newItem.setStock(stock);
-				session.setAttribute("canAdd",true);
+				//追加可能フラグ
+				request.setAttribute("canAdd",true);
+				//完了のサーブレットまで渡したいのでsessionに格納する
 				session.setAttribute("newItem",newItem);
+			}else{//エラーがあったら
+				System.out.println("エラーのあった場合");
+				destination="/AddItem";
+				//追加可能フラグ
+				request.setAttribute("canAdd", Boolean.valueOf(false));
+				//完成したエラーメッセージ用ArrayListをrequestに格納
+				request.setAttribute("errormessage",error);
 			}
-		}
-		if(!error.isEmpty()){
-			System.out.println("エラーのあった場合");
-			destination="/AddItem";
-			session.setAttribute("canAdd", Boolean.valueOf(false));
-			//完成したエラーメッセージ用ArrayListをrequestに格納
-			request.setAttribute("errormessage",error);
 		}
 
 		//ServletContextオブジェクトを取得
-		sc = this.getServletContext();
+		ServletContext sc = this.getServletContext();
 		//RequestDispatcherオブジェクトを取得
 		RequestDispatcher rd = sc.getRequestDispatcher(destination);
 		//forwardメソッドで、処理をreceive.jspに転送

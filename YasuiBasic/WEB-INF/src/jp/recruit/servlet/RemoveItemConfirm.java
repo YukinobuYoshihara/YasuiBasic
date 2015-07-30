@@ -20,7 +20,6 @@ import jp.recruit.misc.CheckUtil;
 public class RemoveItemConfirm extends HttpServlet {
 	private static final long serialVersionUID = 3842549697179632660L;
 
-	@SuppressWarnings("unchecked")
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		ServletContext sc=null;
@@ -34,18 +33,14 @@ public class RemoveItemConfirm extends HttpServlet {
 		// セッションの取得
 		HttpSession session = request.getSession(false);
 
-		// 商品一覧の受け取り
-		ArrayList<ItemBean> items = (ArrayList<ItemBean>)session.getAttribute("items");
-		if(items==null){
-			message="セッションから旧商品情報が取得できませんでした";
-			error.add(message);
-		}
-		
-		try{
-			//最新の商品一覧（在庫付き）を取得
-			ListItemLogic listItemLogic = new ListItemLogic();
-			items = listItemLogic.getItemList();
+		// 商品一覧のArrayList
+		ArrayList<ItemBean> items = null;
 
+		//ロジッククラスのインスタンス作成
+		ListItemLogic listItemLogic = new ListItemLogic();
+		//最新の商品一覧（在庫付き）を取得
+		try{
+			items = listItemLogic.getItemList();
 			//リクエストよりパラメーターのMapを取得
 			Map<String,String[]> itemMap = request.getParameterMap();
 			//チェック用ユーティリティクラスのインスタンス化
@@ -65,7 +60,7 @@ public class RemoveItemConfirm extends HttpServlet {
 			for(ItemBean temp:targetItems){
 				System.out.println("削除対象の商品名："+temp.getItemName());
 			}
-			
+
 			//checkUtilのエラーをエラーリストに追加
 			if(cu.hasErrors()){
 				error.addAll(cu.getErrors());
@@ -91,10 +86,9 @@ public class RemoveItemConfirm extends HttpServlet {
 			System.err.println("エラーを発見したよ:"+error.size());
 			//完成したエラーメッセージ用ArrayListをセッションに格納
 			request.setAttribute("errormessage",error);
+			//エラーがあったので削除の初期画面に差し戻し
 			destination = "/RemoveItem";
 			request.setAttribute("canRemove", Boolean.valueOf(false));
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , message);
-			return;
 		}else{//正常系
 			request.setAttribute("canRemove", Boolean.valueOf(true));
 			//確認済削除対象商品情報ArrayListをセッションに格納

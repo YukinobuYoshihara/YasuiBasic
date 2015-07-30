@@ -37,16 +37,17 @@ public class RemoveItemComplete extends HttpServlet {
 				logic.removeItem(targetItems);
 			}catch(SQLException|NamingException e){
 				e.printStackTrace();
-				error.add("(RemoveItemCompleteServlet)削除処理が失敗しました。DAOの呼び出しに失敗している可能性があります。");
+				error.add("(RemoveItemComplete)削除処理が失敗しました。DAOの呼び出しに失敗している可能性があります。");
 			}
 		}else{
-			error.add("(RemoveItemCompleteServlet)削除対象の商品リストを取得できませんでした。");
+			error.add("(RemoveItemComplete)削除対象の商品リストを取得できませんでした。");
 		}
 		session.removeAttribute("targetItems");
 		if(!error.isEmpty()){
+			//エラーがあったので削除の初期画面にエラーメッセージつきで差し戻し
 			destination="/RemoveItem";
-			//完成したエラーメッセージ用ArrayListをセッションに格納
-			session.setAttribute("errormessage",error);
+			//完成したエラーメッセージ用ArrayListをrequestに格納
+			request.setAttribute("errormessage",error);
 		}
 		
 		//ServletContextオブジェクトを取得

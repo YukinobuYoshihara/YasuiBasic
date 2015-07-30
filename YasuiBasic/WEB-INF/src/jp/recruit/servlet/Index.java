@@ -16,19 +16,17 @@ public class Index extends HttpServlet{
 		req.setCharacterEncoding("UTF-8");
 		res.setCharacterEncoding("UTF-8");
 		HttpSession session = req.getSession(true);
-		Object error = session.getAttribute("errormessage");
-		session.invalidate();
+		if(session != null){
+			session.invalidate();
+		}
+		
 		//セッション取得（なければ作成）
 		session = req.getSession(true);
-		if(error!=null)
-			session.setAttribute("errormessage", error);
 
-		ServletContext sc=null;
-		String destination=null;
 		//ログアウト処理が成功に終わった時の転送先
-		destination = "/WEB-INF/jsp/index.jsp";
+		String destination = "/WEB-INF/jsp/index.jsp";
 		//ServletContextオブジェクトを取得
-		sc = this.getServletContext();
+		ServletContext sc = this.getServletContext();
 		//RequestDispatcherオブジェクトを取得
 		RequestDispatcher rd = sc.getRequestDispatcher(destination);
 		//forwardメソッドで、処理をreceive.jspに転送

@@ -21,8 +21,7 @@ public class RemoveItem extends HttpServlet {
 	protected void doGet(HttpServletRequest request , HttpServletResponse response)
 			throws ServletException,IOException {
 		ServletContext sc=null;
-		String destination=null;
-		destination = "/WEB-INF/jsp/removeItem/RemoveItem.jsp";
+		String destination="/WEB-INF/jsp/removeItem/RemoveItem.jsp";
 		//エラーメッセージ処理クラスのインスタンス化
 		ArrayList<String> error = new ArrayList<String>();
 		//セッションの取得
@@ -34,19 +33,22 @@ public class RemoveItem extends HttpServlet {
 		ArrayList<ItemBean> itemList = new ArrayList<ItemBean>();
 		//ロジッククラスのインスタンス作成
 		ListItemLogic listItemLogic = new ListItemLogic();
-
-		//セッションからitemsを取得できた場合は戻るボタンを押されている
+		//商品情報一覧の取得
 		try{
 			itemList=listItemLogic.getItemList();
 		}catch(SQLException|NamingException|IOException e){
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
-			return;
+			error.add("削除対象の商品情報一覧を取得できませんでした"+e.getMessage());
 		}
-		//完成したエラーメッセージ用ArrayListをRequestに格納
-		request.setAttribute("errormessage",error);
-		//変更対象の商品のArrayListをsessionに格納
-		session.setAttribute("items", itemList);
+		if(!error.isEmpty()){
+			//完成したエラーメッセージ用ArrayListをRequestに格納
+			request.setAttribute("errormessage",error);
+			//トップ画面に転送
+			destination="/index";
+		}
+		
+		//変更対象の商品のArrayListをrequestに格納
+		request.setAttribute("items", itemList);
 		//ServletContextオブジェクトを取得
 		sc = this.getServletContext();
 		//RequestDispatcherオブジェクトを取得

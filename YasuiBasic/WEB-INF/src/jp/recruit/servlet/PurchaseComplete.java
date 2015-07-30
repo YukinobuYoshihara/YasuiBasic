@@ -29,7 +29,6 @@ public class PurchaseComplete extends HttpServlet {
 		HttpSession session = req.getSession(false);
 		//エラーメッセージ処理List
 		ArrayList<String> error = new ArrayList<String>();
-		session.removeAttribute("errormessage");
 
 		@SuppressWarnings("unchecked")
 		ArrayList<ItemBean> orderitems = (ArrayList<ItemBean>)session.getAttribute("items");
@@ -45,14 +44,17 @@ public class PurchaseComplete extends HttpServlet {
 			error.add("エラーの詳細：");
 			error.addAll(logic.getErrors());
 			e.printStackTrace();
-			res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , e.getMessage());
-			return;
 		}
 		session.removeAttribute("orderitems");
 		session.removeAttribute("items");
 
-		//エラーをセッションに格納
-		session.setAttribute("errormessage",error);
+		//エラーがある場合は商品情報一覧画面に差し戻し
+		if(!error.isEmpty()){
+			//エラーをrequestに格納
+			req.setAttribute("errormessage",error);
+			destination = "/ListItem";
+		}
+
 		//ServletContextオブジェクトを取得
 		sc = this.getServletContext();
 		//RequestDispatcherオブジェクトを取得

@@ -115,8 +115,6 @@ public class ChangeStockConfirm extends HttpServlet {
 			request.setAttribute("canChange", Boolean.valueOf(false));
 			//もとのページに戻すので、単なる商品一覧のほうを戻す
 			session.setAttribute("changeStock", items);
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR , message);
-			return;
 		}else{//正常系
 			request.setAttribute("canChange", Boolean.valueOf(true));
 			//完成した注文用ArrayListをセッションに格納（上書き）
