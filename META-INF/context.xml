@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/YasuiBasic" reloadable="true" >
+<Resource name="jdbc/yasui"
+auth="Container"
+type="javax.sql.DataSource"
+username="yasui" password="password"
+driverClassName="oracle.jdbc.driver.OracleDriver"
+url="jdbc:oracle:thin:@localhost:1521:XE"
+maxActive="20" maxWait="-1" maxIdle="10" />
+</Context>

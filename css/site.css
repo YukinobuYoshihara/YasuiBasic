@@ -1,0 +1,83 @@
+/* --- SITEWIDE CSS --- */
+body {
+	margin: 1;
+	font: normal 12pt Verdana, Arial;
+}
+
+a,a:visited {
+	color: #00f;
+}
+
+a:hover {
+	color: #f00;
+}
+
+form.formular{
+	width: 1200px;
+}
+.errormsg{
+	color: red;
+	font-size: small;
+	line-height: 80%;
+}
+table.itemlist{
+    border-top:1px solid #663300;
+    border-left:1px solid #663300;
+    border-collapse:collapse;
+    border-spacing:0;
+    empty-cells:show;
+}
+
+.itemlist tr:nth-child(odd) { background-color:#EEeeAA ;}
+.itemlist tr:nth-child(even) { background-color:#FFffCC ;}
+.itemlist tr:first-child { background-color:#00CCFF ;}
+.itemlist th{
+    border-right:1px solid #663300;
+    border-bottom:1px solid #663300;
+    background-position:left top;
+    padding:0.3em 1em;
+    text-align:center;
+}
+.itemlist td{
+    border-right:1px solid #663300;
+    border-bottom:1px solid #663300;
+    padding:0.3em 1em;
+    text-align:right;
+}
+#nav{
+	border: 0px;
+	padding: 0px;
+	margin: 0px;
+}
+#nav ul{
+	border: 0px;
+	padding: 0px;
+	margin: 0px;
+}
+#nav li {
+display: inline; /* インライン表示で横並びに */
+border-right: 1px solid #333; /* 右側に区切り線 */
+padding-right: 0.5em;
+}
+#nav li:first-child{
+	border-right: none;
+}
+#nav li:last-child {
+border-right: none; /* 最後のli要素の場合、区切り線を表示しない */
+}
+
+#goreturn{
+	display: inline-flex;
+}
+
+input[type="submit"]{
+	width: 160px;
+	height: 30px;
+}
+input[type="reset"]{
+	height: 30px;
+}
+
+input[type="number"]{
+	width: 120px;
+}
